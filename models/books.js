@@ -22,6 +22,21 @@ exports.getAll = async function getAll (page, limit, order, direction) {
   return data;
 }
 
+//get all the books by user id
+exports.getByUserId = async function getByUserId (userId, page, limit, order, direction) {
+  const offset = (page - 1) * limit;
+  let query;
+  if (direction === 'DESC') {
+    query = "SELECT * FROM books WHERE ownerId = ? ORDER BY ?? DESC LIMIT ? OFFSET ?;";
+  } else {
+    query = "SELECT * FROM books WHERE ownerId = ? ORDER BY ?? ASC LIMIT ? OFFSET ?;";    
+  }
+  const values = [userId, order, parseInt(limit), parseInt(offset)];
+  const data = await db.run_query(query, values);
+  return data;
+}
+
+
 //create a new book in the database
 exports.add = async function add (book) {
   const query = "INSERT INTO books SET ?";
