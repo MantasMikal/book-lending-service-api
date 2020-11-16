@@ -16,10 +16,25 @@ router.post('/', auth, bodyParser(), validateBook, createBook);
 router.get('/:id([0-9]{1,})', getById);
 router.put('/:id([0-9]{1,})', auth, bodyParser(), validateBook, updateBook);
 router.del('/:id([0-9]{1,})', auth, deleteBook);
+router.get('/user/:userId([0-9]{1,})', getByUserId);
 
 async function getAll(ctx) {
   const {page=1, limit=100, order="dateCreated", direction='ASC'} = ctx.request.query;
   const result = await books.getAll(page, limit, order, direction);
+  if (result.length) {
+    const body = result.map(book => {
+      const {ID, title, summary, author, yearPublished, ISBN, imageURL, ownerID, borrowerId, requesterId} = book;
+      return {ID, title, summary, author, yearPublished, ISBN, imageURL, ownerID, borrowerId, requesterId};
+    });
+
+    ctx.body = body;
+  }
+}
+
+async function getByUserId(ctx) {
+  const { userId } = ctx.params;
+  const {page=1, limit=100, order="dateCreated", direction='ASC'} = ctx.request.query;
+  const result = await books.getByUserId(userId, page, limit, order, direction);
   if (result.length) {
     const body = result.map(book => {
       const {ID, title, summary, author, yearPublished, ISBN, imageURL, ownerID, borrowerId, requesterId} = book;
