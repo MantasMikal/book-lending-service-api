@@ -1,0 +1,119 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: 304CEM Back End Demonstration API
+  description: A simple blog API. Use the module worksheets to complete the code and API architecture!
+  contact:
+    name: Colin Stephen
+    email: ab5169@coventry.ac.uk
+  license:
+    name: Apache 2.0
+    url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
+servers:
+  - url: 'https://ecology-fiction-3000.codio-box.uk/api/v1'
+    description: Development server
+tags:
+  - name: Users
+    description: API endpoints for user management.
+  - name: Articles
+    description: Access and perform CRUD operations on blog entries.
+paths:
+  /users:
+    summary: Represents an individual user
+    description: >
+      This resource represents an individual user in the system.
+      Each user is identified by a numeric `id`.
+    post:
+      tags:
+        - Users
+      description:
+        Create a new user account.
+      requestBody:
+        description: All new user data.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./user.json#/definitions/user
+      responses:
+        '201':
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: ./user.json#/definitions/userUpdated
+    get:
+      tags:
+        - Users
+      description:
+        Get a list of all users.
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                $ref: ./user.json#/definitions/userList
+        '401':
+          description: Only admin users can list all accounts
+  /users/{id}:
+    parameters:
+      - in: path
+        name: id
+        schema:
+          type: integer
+        required: true
+        description: Numeric id of the user
+    get:
+      tags:
+        - Users
+      description:
+        Get user by id.
+      responses:
+        '200':
+          description: View of user record
+          content:
+            application/json:
+              schema:
+                $ref: ./user.json#/definitions/userView
+        '401':
+          description: Non-admin users can only view their own record
+        '404':
+          description: Not found
+    put:
+      tags:
+        - Users
+      description:
+        Update user by id.
+      requestBody:
+        description: Update a visible property or the password.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./user.json#/definitions/userUpdate
+      responses:
+        '200':
+          description: Confirmation and link to record.
+          content:
+            application/json:
+              schema:
+                $ref: ./user.json#/definitions/userUpdated
+        '404':
+          description: Not found
+    delete:
+      tags:
+        - Users
+      description:
+        Delete user by id.
+      responses:
+        '200':
+          description: Confirmation of deletion.
+          content:
+            application/json:
+              schema:
+                $ref: ./user.json#/definitions/userDeleted
+        '401':
+          description: Only admin users can delete accounts
+        '404':
+          description: Not found

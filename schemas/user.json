@@ -1,0 +1,171 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+
+    
+    "user": {
+      "$id": "#user",
+      "title": "User",
+      "description": "Data to register a new user.",
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "description": "First name",
+          "type": "string"
+        },
+        "lastName": {
+          "description": "Last name",
+          "type": "string"
+        },
+        "about": {
+          "description": "Description of the user",
+          "type": "string"
+        },
+        "email": {
+          "description": "Unique email address",
+          "type": "string",
+          "format": "email"
+        },
+        "avatarURL": {
+          "description": "URL of avatar image",
+          "type": "string",
+          "format": "uri"
+        },
+        "username": {
+          "description": "Unique username",
+          "type": "string",
+          "minLength": 3
+        },
+        "password": {
+          "description": "Password for registration",
+          "type": "string",
+          "minLength": 6
+        }
+      },
+      "required": ["username", "email", "password"],
+      "additionalProperties": false
+    },
+
+    
+    "userView": {
+      "$id": "#userView",
+      "title": "User View",
+      "description": "Data visible to users and admins (excludes password).",
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "description": "First name",
+          "type": "string"
+        },
+        "lastName": {
+          "description": "Last name",
+          "type": "string"
+        },
+        "about": {
+          "description": "Description of the user",
+          "type": "string"
+        },
+        "email": {
+          "description": "Unique email address",
+          "type": "string"
+        },
+        "avatarURL": {
+          "description": "URL of avatar image",
+          "type": "string"
+        },
+        "username": {
+          "description": "Unique username",
+          "type": "string"
+        }
+      }
+    },
+    
+    
+    "userUpdate": {
+      "$id": "#userUpdate",
+      "title": "User Update",
+      "description": "Data a user can update (excludes username).",
+      "type": "object",
+      "properties": {
+        "firstName": {
+          "description": "First name",
+          "type": "string"
+        },
+        "lastName": {
+          "description": "Last name",
+          "type": "string"
+        },
+        "about": {
+          "description": "Description of the user",
+          "type": "string"
+        },
+        "email": {
+          "description": "Unique email address",
+          "type": "string",
+          "format": "email"
+        },
+        "avatarURL": {
+          "description": "URL of avatar image",
+          "type": "string",
+          "format": "uri"
+        },
+        "password": {
+          "description": "Password for registration",
+          "type": "string",
+          "minLength": 6
+        }
+      },
+      "additionalProperties": false
+    },
+    
+    
+    "userList": {
+      "$id": "#userList",
+      "title": "User List",
+      "description": "List of all users visible to admin only.",
+      "type": "array",
+      "items": {"$ref": "#/definitions/userView"}
+    },
+    
+    
+    "userUpdated": {
+      "$id": "#userUpdated",
+      "title": "User Updated",
+      "description": "Confirmation of a successful user update/creation",
+      "type": "object",
+      "properties": {
+        "ID": {
+          "description": "ID of the updated user record",
+          "type": "integer"
+        },
+        "updated": {
+          "description": "Boolean indicator of success",
+          "type": "boolean"
+        },
+        "link": {
+          "description": "Path to retrieve user record",
+          "type": "string",
+          "format": "uri"
+        }
+      }
+    },
+    
+    
+    "userDeleted": {
+      "$id": "#userDeleted",
+      "title": "User Deleted",
+      "description": "Confirmation of a successful deletion",
+      "type": "object",
+      "properties": {
+        "ID": {
+          "description": "ID of the updated user record",
+          "type": "integer"
+        },
+        "deleted": {
+          "description": "Boolean indicator of success",
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

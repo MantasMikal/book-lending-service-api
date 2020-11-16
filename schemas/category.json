@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "category": {
+      "$id": "/category",
+      "title": "Category",
+      "description": "An article category",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The category name",
+          "type": "string"
+        },
+        "description": {
+          "description": "More detail about the category",
+          "type": "string"
+        },
+        "imageURL": {
+          "description": "URL of an image to represent the category",
+          "type": "string",
+          "format": "uri"
+        }
+      },
+      "required": ["name"],
+      "additionalProperties": false      
+    }
+  }
+}
