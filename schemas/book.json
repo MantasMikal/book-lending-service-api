@@ -1,0 +1,55 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "book": {
+      "id": "/book",
+      "title": "book",
+      "description": "A book in the public library",
+      "type": "object",
+      "properties": {
+        "title": {
+          "description": "Main title of the book",
+          "type": "string"
+        },
+        "summary": {
+          "description": "Optional short text summary of book",
+          "type": "string"
+        },
+        "imageURL": {
+          "description": "URL for main image of the book",
+          "type": "string",
+          "format": "uri"
+        },
+        "author": {
+          "description": "Author of the book",
+          "type": "string"
+        },
+        "yearPublished": {
+          "description": "Year the book was written",
+          "type": "number"
+        },
+        "ISBN": {
+          "description": "ISBN of the book",
+          "type": "string"
+        },
+        "ownerID": {
+          "description": "User ID of the book owner",
+          "type": "integer",
+          "minimum": 0
+        },
+        "borrowerId": {
+          "description": "User ID of the book borrower",
+          "type": "integer",
+          "minimum": 0
+        },
+        "requesterId": {
+          "description": "User ID of the book requester",
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": ["title", "author", "yearPublished", "ownerID"],
+      "additionalProperties": false      
+    }
+  }
+}
