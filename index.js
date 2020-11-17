@@ -1,5 +1,7 @@
 const Koa = require('koa');
 const cors = require('@koa/cors');
+const serve = require('koa-static');
+const mount = require('koa-mount')
 const app = new Koa();
 
 const corsOptions = {
@@ -23,6 +25,7 @@ app.use(users.routes());
 app.use(categories.routes());
 app.use(comments.routes());
 app.use(books.routes());
+app.use(mount('/uploads', serve('./uploads')))
 
 let port = process.env.PORT || 3030;
 
