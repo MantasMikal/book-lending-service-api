@@ -1,20 +1,23 @@
 const Router = require('koa-router');
 const bodyParser = require('koa-bodyparser');
+const formidable = require('koa2-formidable');
 
 const auth = require('../controllers/auth');
 const can = require('../permissions/books');
 
 const books = require('../models/books');
 const {validateBook} = require('../controllers/validation');
+const { convertBookData } = require('../controllers/convert')
+const {handleImageUpload} = require('../helpers/handleImageUpload')
 
 const prefix = '/api/v1/books';
 const router = Router({prefix: prefix});
 
 // book routes
 router.get('/', getAll);
-router.post('/', auth, bodyParser(), validateBook, createBook);
+router.post('/', auth, formidable(), bodyParser(), convertBookData, validateBook, createBook);
 router.get('/:id([0-9]{1,})', getById);
-router.put('/:id([0-9]{1,})', auth, bodyParser(), validateBook, updateBook);
+router.put('/:id([0-9]{1,})', formidable(), auth, bodyParser(), convertBookData, validateBook, updateBook);
 router.del('/:id([0-9]{1,})', auth, deleteBook);
 router.get('/user/:userId([0-9]{1,})', getByUserId);
 
@@ -55,7 +58,9 @@ async function getById(ctx) {
 }
 
 async function createBook(ctx) {
-  const body = ctx.request.body;
+  const {body, files} = ctx.request;
+  const urls = files && await handleImageUpload(files)
+  body.imageURL = urls[0]
   const result = await books.add(body);
   if (result.affectedRows) {
     const id = result.insertId;
@@ -73,10 +78,16 @@ async function updateBook(ctx) {
     if (!permission.granted) {
       ctx.status = 403;
     } else {
+      const { files } = ctx.request
+      const urls = files && await handleImageUpload(files)
+      
       // exclude fields that should not be updated
       const {ID, dateCreated, dateModified, ownerID, ...body} = ctx.request.body;
+      body.imageURL = urls[0]
+
       // overwrite updatable fields with remaining body data
       Object.assign(book, body);
+
       result = await books.update(book);
       if (result.affectedRows) {
         ctx.body = {ID: id, updated: true, link: ctx.request.path};
