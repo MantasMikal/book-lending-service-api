@@ -1,3 +1,5 @@
+const fs = require('fs-extra')
+
 /**
  * Checks if file exists
  * @param {String} file path to file with filename
