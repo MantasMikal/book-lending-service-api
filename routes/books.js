@@ -84,7 +84,6 @@ async function updateBook(ctx) {
       // exclude fields that should not be updated
       const {ID, dateCreated, dateModified, ownerID, ...body} = ctx.request.body;
       body.images = urls.join(';') // Join all the image names
-
       // overwrite updatable fields with remaining body data
       Object.assign(book, body);
 
