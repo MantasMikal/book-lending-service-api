@@ -15,11 +15,6 @@
           "description": "Optional short text summary of book",
           "type": "string"
         },
-        "imageURL": {
-          "description": "URL for main image of the book",
-          "type": "string",
-          "format": "uri"
-        },
         "author": {
           "description": "Author of the book",
           "type": "string"

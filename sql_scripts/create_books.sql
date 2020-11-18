@@ -5,7 +5,7 @@ CREATE TABLE books (
       author TEXT NOT NULL,
       yearPublished VARCHAR(5) NOT NULL,
       ISBN TEXT,
-      imageURL VARCHAR(2048),
+      images VARCHAR(2048),
       ownerID INT NOT NULL,
       borrowerId INT,
       requesterId INT,

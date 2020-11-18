@@ -26,8 +26,8 @@ async function getAll(ctx) {
   const result = await books.getAll(page, limit, order, direction);
   if (result.length) {
     const body = result.map(book => {
-      const {ID, title, summary, author, yearPublished, ISBN, imageURL, ownerID, borrowerId, requesterId} = book;
-      return {ID, title, summary, author, yearPublished, ISBN, imageURL, ownerID, borrowerId, requesterId};
+      const {ID, title, summary, author, yearPublished, ISBN, images, ownerID, borrowerId, requesterId} = book;
+      return {ID, title, summary, author, yearPublished, ISBN, images, ownerID, borrowerId, requesterId};
     });
 
     ctx.body = body;
@@ -40,8 +40,8 @@ async function getByUserId(ctx) {
   const result = await books.getByUserId(userId, page, limit, order, direction);
   if (result.length) {
     const body = result.map(book => {
-      const {ID, title, summary, author, yearPublished, ISBN, imageURL, ownerID, borrowerId, requesterId} = book;
-      return {ID, title, summary, author, yearPublished, ISBN, imageURL, ownerID, borrowerId, requesterId};
+      const {ID, title, summary, author, yearPublished, ISBN, images, ownerID, borrowerId, requesterId} = book;
+      return {ID, title, summary, author, yearPublished, ISBN, images, ownerID, borrowerId, requesterId};
     });
 
     ctx.body = body;
@@ -60,7 +60,7 @@ async function getById(ctx) {
 async function createBook(ctx) {
   const {body, files} = ctx.request;
   const urls = files && await handleImageUpload(files)
-  body.imageURL = urls[0]
+  body.images = urls.join(';') // Join all the image names
   const result = await books.add(body);
   if (result.affectedRows) {
     const id = result.insertId;
@@ -83,8 +83,7 @@ async function updateBook(ctx) {
       
       // exclude fields that should not be updated
       const {ID, dateCreated, dateModified, ownerID, ...body} = ctx.request.body;
-      body.imageURL = urls[0]
-
+      body.images = urls.join(';') // Join all the image names
       // overwrite updatable fields with remaining body data
       Object.assign(book, body);
 

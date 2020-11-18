@@ -15,8 +15,8 @@ const handleImageUpload = async (files) => {
 
   for(let i = 0; i < images.length; i++) {
     const {type, path, name} = images[i]
-    if(await checkFileExists(`uploads/${name}`)) {
-      links.push(name) // return the same file
+    if(await checkFileExists(`uploads/${name}`)) { // return the same file if exists
+      links.push(name) 
     } else {
       const formattedFileName = `${Date.now()}.${mime.extension(type)}`
       await fs.copy(path, `uploads/${formattedFileName}`)
