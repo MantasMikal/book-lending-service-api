@@ -15,18 +15,13 @@
           "description": "Optional short text summary of book",
           "type": "string"
         },
-        "imageURL": {
-          "description": "URL for main image of the book",
-          "type": "string",
-          "format": "uri"
-        },
         "author": {
           "description": "Author of the book",
           "type": "string"
         },
         "yearPublished": {
           "description": "Year the book was written",
-          "type": "number"
+          "type": "string"
         },
         "ISBN": {
           "description": "ISBN of the book",
@@ -49,7 +44,7 @@
         }
       },
       "required": ["title", "author", "yearPublished", "ownerID"],
-      "additionalProperties": false      
+      "additionalProperties": true      
     }
   }
 }
