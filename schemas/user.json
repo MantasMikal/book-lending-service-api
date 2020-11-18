@@ -9,27 +9,10 @@
       "description": "Data to register a new user.",
       "type": "object",
       "properties": {
-        "firstName": {
-          "description": "First name",
-          "type": "string"
-        },
-        "lastName": {
-          "description": "Last name",
-          "type": "string"
-        },
-        "about": {
-          "description": "Description of the user",
-          "type": "string"
-        },
         "email": {
           "description": "Unique email address",
           "type": "string",
           "format": "email"
-        },
-        "avatarURL": {
-          "description": "URL of avatar image",
-          "type": "string",
-          "format": "uri"
         },
         "username": {
           "description": "Unique username",
@@ -40,9 +23,29 @@
           "description": "Password for registration",
           "type": "string",
           "minLength": 6
+        },
+        "country": {
+          "description": "Country",
+          "type": "string",
+          "minLength": 2
+        },
+        "city": {
+          "description": "City",
+          "type": "string",
+          "minLength": 2
+        },
+        "postcode": {
+          "description": "Postcode",
+          "type": "string",
+          "minLength": 4
+        },
+        "address": {
+          "description": "Address",
+          "type": "string",
+          "minLength": 5
         }
       },
-      "required": ["username", "email", "password"],
+      "required": ["username", "email", "password", "country", "city", "postcode", "address"],
       "additionalProperties": false
     },
 
