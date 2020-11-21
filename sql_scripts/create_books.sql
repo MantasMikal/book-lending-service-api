@@ -16,3 +16,5 @@ CREATE TABLE books (
       FOREIGN KEY (borrowerID) REFERENCES users (ID) ON DELETE CASCADE,
       FOREIGN KEY (requesterID) REFERENCES users (ID) ON DELETE CASCADE
 );
+
+INSERT INTO books (title, summary, author, yearPublished, ownerID) VALUES ('Book', 'A summray', 'Mantas', '2019', 1);
