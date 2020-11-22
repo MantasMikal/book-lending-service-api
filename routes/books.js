@@ -31,6 +31,8 @@ async function getAll(ctx) {
     });
 
     ctx.body = body;
+  } else {
+    ctx.body = []
   }
 }
 
@@ -45,6 +47,8 @@ async function getByUserId(ctx) {
     });
 
     ctx.body = body;
+  } else {
+    ctx.body = []
   }
 }
 
@@ -54,6 +58,8 @@ async function getById(ctx) {
   if (result.length) {
     const article = result[0];
     ctx.body = article;
+  } else {
+    ctx.body = []
   }
 }
 
