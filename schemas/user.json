@@ -19,6 +19,11 @@
           "type": "string",
           "minLength": 3
         },
+        "fullName": {
+          "description": "Full name",
+          "type": "string",
+          "minLength": 3
+        },
         "password": {
           "description": "Password for registration",
           "type": "string",
