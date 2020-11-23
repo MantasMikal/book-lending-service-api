@@ -1,0 +1,12 @@
+CREATE TABLE messages (
+      ID INT NOT NULL AUTO_INCREMENT,  
+      message TEXT,
+      senderID INT NOT NULL,
+      receiverID INT NOT NULL,
+      requestID INT NOT NULL,
+      dateCreated DATETIME DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (ID),
+      FOREIGN KEY (senderID) REFERENCES users (ID) ON DELETE CASCADE,
+      FOREIGN KEY (receiverID) REFERENCES users (ID) ON DELETE CASCADE,
+      FOREIGN KEY (requestID) REFERENCES requests (ID) ON DELETE CASCADE
+);

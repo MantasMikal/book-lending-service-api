@@ -18,8 +18,8 @@ async function searchBooks(ctx) {
   }
   if (result.length) {
     const body = result.map(book => {
-      const {ID, title, summary, author, yearPublished, ISBN, images, ownerID, borrowerId, requesterId} = book;
-      return {ID, title, summary, author, yearPublished, ISBN, images, ownerID, borrowerId, requesterId};
+      const {ID, title, summary, author, yearPublished, ISBN, images, ownerID, requestID, status} = book;
+      return {ID, title, summary, author, yearPublished, ISBN, images, ownerID, requestID, status};
     });
     ctx.body = body;
   } else {

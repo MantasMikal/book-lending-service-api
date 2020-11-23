@@ -1,0 +1,3 @@
+ALTER TABLE books
+  ADD CONSTRAINT requestID_fk FOREIGN KEY (requestID) 
+  REFERENCES requests (ID) ON DELETE CASCADE;

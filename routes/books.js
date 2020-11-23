@@ -26,8 +26,8 @@ async function getAll(ctx) {
   const result = await books.getAll(page, limit, order, direction);
   if (result.length) {
     const body = result.map(book => {
-      const {ID, title, summary, author, yearPublished, ISBN, images, ownerID, borrowerId, requesterId} = book;
-      return {ID, title, summary, author, yearPublished, ISBN, images, ownerID, borrowerId, requesterId};
+      const {ID, title, summary, author, yearPublished, ISBN, images, ownerID, borrowerId, requesterId, status} = book;
+      return {ID, title, summary, author, yearPublished, ISBN, images, ownerID, borrowerId, requesterId, status};
     });
 
     ctx.body = body;
@@ -42,8 +42,8 @@ async function getByUserId(ctx) {
   const result = await books.getByUserId(userId, page, limit, order, direction);
   if (result.length) {
     const body = result.map(book => {
-      const {ID, title, summary, author, yearPublished, ISBN, images, ownerID, borrowerId, requesterId} = book;
-      return {ID, title, summary, author, yearPublished, ISBN, images, ownerID, borrowerId, requesterId};
+      const {ID, title, summary, author, yearPublished, ISBN, images, ownerID, borrowerId, requesterId, status} = book;
+      return {ID, title, summary, author, yearPublished, ISBN, images, ownerID, borrowerId, requesterId, status};
     });
 
     ctx.body = body;
