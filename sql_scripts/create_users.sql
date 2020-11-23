@@ -2,6 +2,7 @@ CREATE TABLE users (
       ID INT NOT NULL AUTO_INCREMENT,  
       role VARCHAR(16) NOT NULL DEFAULT 'user',
       username VARCHAR(16) UNIQUE NOT NULL,
+      fullName VARCHAR(128) NOT NULL,
       dateRegistered DATETIME DEFAULT CURRENT_TIMESTAMP,
       password VARCHAR(128) NOT NULL,  
       passwordSalt VARCHAR(16),  
