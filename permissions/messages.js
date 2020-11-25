@@ -2,7 +2,7 @@ const AccessControl = require("role-acl");
 const ac = new AccessControl();
 
 
-// Book owner and request owner can access message
+// Book owner and request owner can access the message
 const isParticipantInRequest = ({ requester, request }) => {
   const { bookOwnerID, requesterID } = request; 
   return (
