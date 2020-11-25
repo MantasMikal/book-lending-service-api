@@ -17,7 +17,7 @@ router.post("/", auth, bodyParser(), validateRequest, createRequest);
 router.get("/user/:userID([0-9]{1,})", auth, getByUserId);
 router.get("/:requestID([0-9]{1,})", auth, getByRequestId);
 router.post("/archive/:requestID([0-9]{1,})", auth, archiveRequest);
-// router.del("/:requestID([0-9]{1,})", auth, delByRequestId);
+router.del("/:requestID([0-9]{1,})", auth, delByRequestId);
 
 async function createRequest(ctx) {
   const { body } = ctx.request;
@@ -152,40 +152,31 @@ async function archiveRequest(ctx) {
   }
 }
 
-// async function delByRequestId(ctx) {
-//   const { requestID } = ctx.params;
-//   const requestByID = await requests.getById(requestID);
-//   const request = requestByID[0];
-//   if (!request) {
-//     ctx.status = 404;
-//     return;
-//   }
+async function delByRequestId(ctx) {
+  const { requestID } = ctx.params;
+  const requestByID = await requests.getById(requestID);
+  const request = requestByID[0];
+  const { requesterID, bookID } = request
+  const bookByID = await books.getById(bookID)
+  const book = bookByID[0]
 
-//   const permission = can.readByRequestId(ctx.state.user, request);
+  if (!request || !book) {
+    ctx.status = 404;
+    return;
+  }
 
-//   if (!permission.granted) {
-//     ctx.status = 401;
-//     return;
-//   }
+  const permission = can.delete(ctx.state.user, requesterID);
+  if (!permission.granted) {
+    ctx.status = 401;
+    return;
+  }
 
-//   const result = await requests.getById(requestID);
-//   if (result.length) {
-//     const body = result.map((request) => {
-//       const {
-//         ID,
-//         title,
-//         requesterID,
-//         bookID,
-//         bookOwnerID,
-//         dateCreated,
-//       } = request;
-//       return { ID, title, requesterID, bookID, bookOwnerID, dateCreated };
-//     });
+  const bookUpdate = await books.update({...book, status: 'Available', requestID: null})
+  const deleteResult = await requests.delById(requestID)
 
-//     ctx.body = body;
-//   } else {
-//     ctx.body = [];
-//   }
-// }
+  if(bookUpdate.affectedRows && deleteResult.affectedRows) {
+    ctx.body = {ID: requestID, deleted: true}
+  }
+}
 
 module.exports = router;
