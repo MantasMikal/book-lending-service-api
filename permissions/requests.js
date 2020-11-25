@@ -1,15 +1,13 @@
 const AccessControl = require('role-acl');
 const ac = new AccessControl();
 
-// controls for specific CRUD operations on book records
-// don't let users update a book ID or the ownerID
-
 const isParticipantInRequest = ({ requester, request }) => {
   const { bookOwnerID, requesterID } = request; 
   return (
     requester === parseInt(bookOwnerID) || requester === parseInt(requesterID)
   );
 }
+
 
 ac
   .grant('user')
@@ -20,6 +18,11 @@ ac
   .grant('user')
   .condition(isParticipantInRequest)
   .execute('readByRequestId')
+  .on('request')
+ac
+  .grant('user')
+  .condition(isParticipantInRequest)
+  .execute('update')
   .on('request')
 
 exports.read = (requester, requesterID) => {
@@ -40,3 +43,11 @@ exports.readByRequestId = (requester, request) => {
     .on("request");
 };
 
+exports.update = (requester, request) => {
+  return ac
+    .can(requester.role)
+    .context({ requester: requester.ID, request: request })
+    .execute("update")
+    .sync()
+    .on("request");
+};

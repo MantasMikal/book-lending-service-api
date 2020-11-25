@@ -16,6 +16,7 @@ const router = Router({ prefix: prefix });
 router.post("/", auth, bodyParser(), validateRequest, createRequest);
 router.get("/user/:userID([0-9]{1,})", auth, getByUserId);
 router.get("/:requestID([0-9]{1,})", auth, getByRequestId);
+router.post("/archive/:requestID([0-9]{1,})", auth, archiveRequest);
 // router.del("/:requestID([0-9]{1,})", auth, delByRequestId);
 
 async function createRequest(ctx) {
@@ -65,7 +66,6 @@ async function getByUserId(ctx) {
     ctx.status = 401;
     return;
   }
-
   const {
     page = 1,
     limit = 100,
@@ -79,20 +79,8 @@ async function getByUserId(ctx) {
     order,
     direction
   );
-  if (result.length) {
-    const body = result.map((request) => {
-      const {
-        ID,
-        title,
-        requesterID,
-        bookID,
-        bookOwnerID,
-        dateCreated,
-        status
-      } = request;
-      return { ID, title, requesterID, bookID, bookOwnerID, dateCreated, status };
-    });
-    ctx.body = body;
+  if (result.length && result[0]) {
+    ctx.body = result[0];
   } else {
     ctx.body = [];
   }
@@ -115,23 +103,50 @@ async function getByRequestId(ctx) {
   }
 
   const result = await requests.getById(requestID);
-  if (result.length) {
-    const body = result.map((request) => {
-      const {
-        ID,
-        title,
-        requesterID,
-        bookID,
-        bookOwnerID,
-        dateCreated,
-        status
-      } = request;
-      return { ID, title, requesterID, bookID, bookOwnerID, dateCreated, status };
-    });
-
-    ctx.body = body;
+  if (result.length && result[0]) {
+    ctx.body = result[0];
   } else {
     ctx.body = [];
+  }
+}
+
+async function archiveRequest(ctx) {
+  const { requestID } = ctx.params;
+  const requestByID = await requests.getById(requestID); // check it exists
+  const request = requestByID[0];
+  const { requesterID, bookOwnerID } = request;
+  const { user } = ctx.state;
+  let updateResult;
+
+  if (!request) {
+    ctx.status = 404;
+    return;
+  }
+
+  const permission = can.update(user, request);
+  if (!permission.granted) {
+    ctx.status = 403;
+    return;
+  }
+
+  // Archive for requester
+  if (requesterID === user.ID) {
+    updateResult = await requests.update({
+      ...request,
+      isArchivedByRequester: 1,
+    });
+  }
+
+  // Archive for receiver
+  if (bookOwnerID === user.ID) {
+    updateResult = await requests.update({
+      ...request,
+      isArchivedByReceiver: 1,
+    });
+  }
+
+  if (updateResult.affectedRows) {
+    ctx.body = { ID: requestID, updated: true, link: ctx.request.path };
   }
 }
 

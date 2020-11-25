@@ -4,6 +4,8 @@ CREATE TABLE requests (
       requesterID INT NOT NULL,
       bookID INT NOT NULL,
       bookOwnerID INT NOT NULL,
+      isArchivedByRequester BOOL DEFAULT 0,
+      isArchivedByReceiver BOOL DEFAULT 0,
       dateCreated DATETIME DEFAULT CURRENT_TIMESTAMP,
       dateModified DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
       status VARCHAR(128) DEFAULT 'Open',
