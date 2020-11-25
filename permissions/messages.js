@@ -4,9 +4,6 @@ const ac = new AccessControl();
 
 // Book owner and request owner can access message
 const isParticipantInRequest = ({ requester, request }) => {
-  console.log("🚀 ~ file: messages.js ~ line 12 ~ isParticipantInRequest ~ request", request)
-console.log("🚀 ~ file: messages.js ~ line 12 ~ isParticipantInRequest ~ requester", requester)
-
   const { bookOwnerID, requesterID } = request; 
   return (
     requester === parseInt(bookOwnerID) || requester === parseInt(requesterID)

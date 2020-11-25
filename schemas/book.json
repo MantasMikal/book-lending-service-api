@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "definitions": {
     "book": {
-      "id": "/book",
+      "id": "#book",
       "title": "book",
       "description": "A book in the public library",
       "type": "object",
@@ -44,7 +44,21 @@
         }
       },
       "required": ["title", "author", "yearPublished", "ownerID"],
-      "additionalProperties": true      
+      "additionalProperties": true
+    },
+    
+    "status": {
+      "$id": "#status",
+      "title": "status",
+      "description": "Book status",
+      "type": "object",
+      "properties": {
+        "status": {
+          "description": "Status",
+          "type": "string",
+          "enum": ["Available", "On Loan", "Requested"]
+        }
+      }
     }
   }
 }

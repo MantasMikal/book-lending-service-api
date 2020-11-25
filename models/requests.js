@@ -45,7 +45,7 @@ exports.delById = async function delById(id) {
 
 //update an existing request
 exports.update = async function update(request) {
-  const query = "UPDATE books SET ? WHERE ID = ?;";
+  const query = "UPDATE requests SET ? WHERE ID = ?;";
   const values = [request, request.ID];
   const data = await db.run_query(query, values);
   return data;

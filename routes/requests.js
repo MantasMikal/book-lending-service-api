@@ -16,8 +16,7 @@ const router = Router({ prefix: prefix });
 router.post("/", auth, bodyParser(), validateRequest, createRequest);
 router.get("/user/:userID([0-9]{1,})", auth, getByUserId);
 router.get("/:requestID([0-9]{1,})", auth, getByRequestId);
-router.del("/:requestID([0-9]{1,})", auth, delByRequestId);
-
+// router.del("/:requestID([0-9]{1,})", auth, delByRequestId);
 
 async function createRequest(ctx) {
   const { body } = ctx.request;
@@ -30,7 +29,7 @@ async function createRequest(ctx) {
     return;
   }
 
-  // Check it's possible to request a book
+  // Check if it's possible to request a book
   const { requestID, ownerID } = book;
   if (requesterID === ownerID) {
     ctx.status = 200;
@@ -89,8 +88,9 @@ async function getByUserId(ctx) {
         bookID,
         bookOwnerID,
         dateCreated,
+        status
       } = request;
-      return { ID, title, requesterID, bookID, bookOwnerID, dateCreated };
+      return { ID, title, requesterID, bookID, bookOwnerID, dateCreated, status };
     });
     ctx.body = body;
   } else {
@@ -124,8 +124,9 @@ async function getByRequestId(ctx) {
         bookID,
         bookOwnerID,
         dateCreated,
+        status
       } = request;
-      return { ID, title, requesterID, bookID, bookOwnerID, dateCreated };
+      return { ID, title, requesterID, bookID, bookOwnerID, dateCreated, status };
     });
 
     ctx.body = body;
@@ -134,40 +135,40 @@ async function getByRequestId(ctx) {
   }
 }
 
-async function delByRequestId(ctx) {
-  const { requestID } = ctx.params;
-  const requestByID = await requests.getById(requestID);
-  const request = requestByID[0];
-  if (!request) {
-    ctx.status = 404;
-    return;
-  }
+// async function delByRequestId(ctx) {
+//   const { requestID } = ctx.params;
+//   const requestByID = await requests.getById(requestID);
+//   const request = requestByID[0];
+//   if (!request) {
+//     ctx.status = 404;
+//     return;
+//   }
 
-  const permission = can.readByRequestId(ctx.state.user, request);
+//   const permission = can.readByRequestId(ctx.state.user, request);
 
-  if (!permission.granted) {
-    ctx.status = 401;
-    return;
-  }
+//   if (!permission.granted) {
+//     ctx.status = 401;
+//     return;
+//   }
 
-  const result = await requests.getById(requestID);
-  if (result.length) {
-    const body = result.map((request) => {
-      const {
-        ID,
-        title,
-        requesterID,
-        bookID,
-        bookOwnerID,
-        dateCreated,
-      } = request;
-      return { ID, title, requesterID, bookID, bookOwnerID, dateCreated };
-    });
+//   const result = await requests.getById(requestID);
+//   if (result.length) {
+//     const body = result.map((request) => {
+//       const {
+//         ID,
+//         title,
+//         requesterID,
+//         bookID,
+//         bookOwnerID,
+//         dateCreated,
+//       } = request;
+//       return { ID, title, requesterID, bookID, bookOwnerID, dateCreated };
+//     });
 
-    ctx.body = body;
-  } else {
-    ctx.body = [];
-  }
-}
+//     ctx.body = body;
+//   } else {
+//     ctx.body = [];
+//   }
+// }
 
 module.exports = router;

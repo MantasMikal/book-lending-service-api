@@ -8,6 +8,7 @@
 const {Validator, ValidationError} = require('jsonschema');
 
 const bookSchema = require('../schemas/book.json').definitions.book;
+const bookStatusSchema = require('../schemas/book.json').definitions.status;
 const requestSchema = require('../schemas/request.json').definitions.request;
 const messageSchema = require('../schemas/message.json').definitions.message;
 const articleSchema = require('../schemas/article.json').definitions.article;
@@ -57,6 +58,8 @@ const makeKoaValidator = (schema, resource) => {
 
 /** Validate data against book schema */
 exports.validateBook = makeKoaValidator(bookSchema, 'book');
+/** Validate data against book status schema */
+exports.validateBookStatus = makeKoaValidator(bookStatusSchema, 'status');
 /** Validate data against message schema */
 exports.validateMessage = makeKoaValidator(messageSchema, 'message');
 /** Validate data against book schema */

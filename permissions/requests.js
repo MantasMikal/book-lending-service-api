@@ -5,9 +5,6 @@ const ac = new AccessControl();
 // don't let users update a book ID or the ownerID
 
 const isParticipantInRequest = ({ requester, request }) => {
-  console.log("🚀 ~ file: requests.js ~ line 13 ~ isParticipantInRequest ~ request", request)
-console.log("🚀 ~ file: requests.js ~ line 13 ~ isParticipantInRequest ~ requester", requester)
-
   const { bookOwnerID, requesterID } = request; 
   return (
     requester === parseInt(bookOwnerID) || requester === parseInt(requesterID)

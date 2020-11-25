@@ -27,7 +27,7 @@ async function createMessage(ctx) {
     ctx.status = 404;
     return;
   }
-
+  console.log('Sending message', body)
   const permission = can.write(ctx.state.user, request)
 
   if(!permission.granted) {
@@ -61,8 +61,8 @@ async function getByRequestId(ctx) {
   const result = await messages.getByRequestId(requestID, page, limit, order, direction);
   if (result.length) {
     const body = result.map(msg => {
-      const {ID, message, senderID, receiverID} = msg;
-      return {ID, message, senderID, receiverID};
+      const {ID, message, senderID, receiverID, dateCreated} = msg;
+      return {ID, message, senderID, receiverID, dateCreated};
     });
     ctx.body = body;
   } else {
