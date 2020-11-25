@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "request": {
+      "$id": "/request",
+      "title": "request",
+      "description": "A book request",
+      "type": "object",
+      "properties": {
+        "title": {
+          "description": "Request title",
+          "type": "string"
+        },
+        "requesterID": {
+          "description": "A request owner",
+          "type": "number"
+        },
+        "bookID": {
+          "description": "ID of the requested book",
+          "type": "number"
+        }
+      },
+      "required": ["title", "requesterID", "bookID"],
+      "additionalProperties": false
+    }
+  }
+}

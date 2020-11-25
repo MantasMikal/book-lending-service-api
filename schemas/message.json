@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "definitions": {
+    "message": {
+      "$id": "/message",
+      "title": "message",
+      "description": "A message",
+      "type": "object",
+      "properties": {
+        "message": {
+          "description": "Message body",
+          "type": "string"
+        },
+        "senderID": {
+          "description": "ID of message sender",
+          "type": "number"
+        },
+        "requestID": {
+          "description": "ID of the request",
+          "type": "number"
+        },
+        "receiverID": {
+          "description": "ID of message receiver",
+          "type": "number"
+        }
+      },
+      "required": ["message", "senderID", "receiverID"],
+      "additionalProperties": false
+    }
+  }
+}
