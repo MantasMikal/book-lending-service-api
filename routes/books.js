@@ -13,7 +13,6 @@ const {
 } = require("../controllers/validation");
 const { convertBookData } = require("../controllers/convert");
 const { handleImageUpload } = require("../helpers/handleImageUpload");
-const { stat } = require("fs-extra");
 
 const prefix = "/api/v1/books";
 const router = Router({ prefix: prefix });
@@ -200,6 +199,7 @@ async function updateStatus(ctx) {
   let result = await books.getById(parseInt(bookID));
   let book = result[0];
   const { requestID } = book;
+  
   if (!book) {
     ctx.status = 404;
     return;

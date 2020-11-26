@@ -25,6 +25,7 @@ CREATE TABLE users (
       FOREIGN KEY (role) REFERENCES roles (name)
 );
 
+
 CREATE TABLE books (
       ID INT NOT NULL AUTO_INCREMENT,  
       title VARCHAR(32) NOT NULL,
@@ -75,5 +76,15 @@ CREATE TABLE messages (
 ALTER TABLE books
   ADD CONSTRAINT requestID_fk FOREIGN KEY (requestID) 
   REFERENCES requests (ID) ON DELETE CASCADE;
+
+INSERT INTO users (username, fullName, password, email, country, city, postcode, address) VALUES ('user1', 'User 1', '$2b$10$o8or.rOS9bAzz.Dd7Hbli.KTXh1P/ZRZSaff0tA7fBdocgjjsSXh6', 'user1@user.com', 'Country', 'City', 'Postcode', 'Address');
+INSERT INTO users (username, fullName, password, email, country, city, postcode, address) VALUES ('user2', 'User 2', '$2b$10$o8or.rOS9bAzz.Dd7Hbli.KTXh1P/ZRZSaff0tA7fBdocgjjsSXh6', 'user2@user.com', 'Country', 'City', 'Postcode', 'Address');
+
+INSERT INTO books (title, summary, author, yearPublished, ownerID) VALUES ('Book 1', 'A summray', 'Mantas', '2019', 1);
+INSERT INTO books (title, summary, author, yearPublished, ownerID) VALUES ('Book 2', 'A summray', 'Mantas', '2019', 1);
+
+INSERT INTO requests(title, requesterID, bookID, bookOwnerID) VALUES ('Request title', 2, 1, 1);
+
+INSERT INTO messages(message, senderID, receiverID, requestID) VALUES ('Mock message', 1, 2, 1);
 
 SET FOREIGN_KEY_CHECKS = 1;

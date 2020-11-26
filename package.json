@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "cross-env DB_DATABASE=test_db jest --testTimeout=10000",
-    "test:watch": "cross-env DB_DATABASE=test_db jest --watch",
+    "test": "cross-env DB_DATABASE=test_db jest --testTimeout=10000 --runInBand",
+    "test:watch": "cross-env DB_DATABASE=test_db jest --watch --runInBand",
     "testDB:drop": "mysql --user=root --password=p455w0rd -e 'DROP DATABASE test_db;'",
     "testDB:create": "mysql --user=root --password=p455w0rd -e 'CREATE DATABASE test_db;'",
     "testDB:setup": "mysql --user=root --password=p455w0rd test_db < ./sql_scripts/setup_test_db.sql",

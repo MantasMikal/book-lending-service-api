@@ -111,7 +111,6 @@ async function deleteUser(ctx) {
   let result = await model.getById(id);
   if (result.length) {
     const data = result[0];
-    console.log("trying to delete", data);
     const permission = can.delete(ctx.state.user, data);
     if (!permission.granted) {
       ctx.status = 403;
