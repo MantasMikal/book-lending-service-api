@@ -1,10 +1,15 @@
 {
-  "name": "blog_demo",
+  "name": "book-lend-backend",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "cross-env DB_DATABASE=test_db jest --testTimeout=10000",
+    "test:watch": "cross-env DB_DATABASE=test_db jest --watch",
+    "testDB:drop": "mysql --user=root --password=p455w0rd -e 'DROP DATABASE test_db;'",
+    "testDB:create": "mysql --user=root --password=p455w0rd -e 'CREATE DATABASE test_db;'",
+    "testDB:setup": "mysql --user=root --password=p455w0rd test_db < ./sql_scripts/setup_test_db.sql",
+    "pretest": "npm run testDB:drop && npm run testDB:create && npm run testDB:setup",
     "start": "nodemon index.js"
   },
   "author": "",
@@ -29,6 +34,15 @@
     "uuid": "^8.3.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.6"
+    "cross-env": "^7.0.2",
+    "jest": "^26.6.3",
+    "nodemon": "^2.0.6",
+    "supertest": "^6.0.1"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
   }
 }
