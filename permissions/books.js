@@ -22,8 +22,6 @@ ac
 
 
 exports.update = (requester, data) => {
-    console.log(requester)
-    console.log(data)
   return ac
     .can(requester.role)
     .context({requester:requester.ID, owner:data.ownerID})

@@ -13,7 +13,6 @@ const {
 } = require("../controllers/validation");
 const { convertBookData } = require("../controllers/convert");
 const { handleImageUpload } = require("../helpers/handleImageUpload");
-const { stat } = require("fs-extra");
 
 const prefix = "/api/v1/books";
 const router = Router({ prefix: prefix });
@@ -200,6 +199,7 @@ async function updateStatus(ctx) {
   let result = await books.getById(parseInt(bookID));
   let book = result[0];
   const { requestID } = book;
+  
   if (!book) {
     ctx.status = 404;
     return;
@@ -233,8 +233,8 @@ async function updateStatus(ctx) {
 
       case "Available":
         // If changing status to available
-        // Means the book was returned
-        // Remove the request from book
+        // Means the book was returned/no longer on loN
+        // Remove associated request from book
         // Set request status to complete
         bookUpdateResult = await requests.update({
           ...request,
