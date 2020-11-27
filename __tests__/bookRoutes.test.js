@@ -53,7 +53,7 @@ describe("Retrieve books", () => {
   it("should retrieve all books", async () => {
     const res = await request(app.callback()).get("/api/v1/books");
     expect(res.statusCode).toEqual(200);
-    expect(res.body.length).toBe(2);
+    expect(res.body.books.length).toBe(2);
   });
 
   it("should retrieve book by id", async () => {
@@ -65,7 +65,7 @@ describe("Retrieve books", () => {
   it("should retrieve books by user ID", async () => {
     const res = await request(app.callback()).get("/api/v1/books/user/1");
     expect(res.statusCode).toEqual(200);
-    expect(res.body.length).toBe(2);
+    expect(res.body.books.length).toBe(2);
   });
 });
 
