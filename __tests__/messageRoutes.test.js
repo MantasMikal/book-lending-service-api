@@ -47,7 +47,7 @@ describe("Create a new message", () => {
       .get(`/api/v1/messages/${mockMessage.requestID}`)
       .set("Authorization", "Basic " + user2token);
     expect(requestMessages.statusCode).toEqual(200);
-    expect(requestMessages.body[1]).toEqual(
+    expect(requestMessages.body.messages[1]).toEqual(
       expect.objectContaining(mockMessage)
     );
   });
@@ -59,8 +59,8 @@ describe("Retrieve messages", () => {
       .get("/api/v1/messages/1")
       .set("Authorization", "Basic " + user2token);
     expect(res.statusCode).toEqual(200);
-    expect(res.body.length).toEqual(1);
-    expect(res.body[0]).toHaveProperty("ID", 1);
+    expect(res.body.messages.length).toEqual(1);
+    expect(res.body.messages[0]).toHaveProperty("ID", 1);
   });
 });
 

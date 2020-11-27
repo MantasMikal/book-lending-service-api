@@ -73,15 +73,31 @@ async function getByUserId(ctx) {
     order = "dateCreated",
     direction = "DESC",
   } = ctx.request.query;
+  
+  let resultLimit = parseInt(limit);
+  let resultPage = parseInt(page);
+
+  resultLimit = resultLimit > 100 ? 100 : resultLimit;
+  resultLimit = resultLimit < 1 ? 10 : resultLimit;
+  resultPage = resultPage < 1 ? 1 : resultPage;
+
   const result = await requests.getByUserId(
     userID,
-    page,
-    limit,
+    resultPage,
+    resultLimit,
     order,
     direction
   );
+
+  const isNextPageAvailable = result && result.length > resultLimit
+  const isPrevPageAvailable =  resultPage - 1 > 1
+
   if (result.length) {
-    ctx.body = result;
+    ctx.body = {
+      requests: result,
+      next: isNextPageAvailable && `${ctx.request.path}?page=${resultPage + 1}`,
+      prev: isPrevPageAvailable && `${ctx.request.path}?page=${resultPage}`,
+    };
   } else {
     ctx.body = [];
   }

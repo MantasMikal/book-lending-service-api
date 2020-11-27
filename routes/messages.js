@@ -56,13 +56,26 @@ async function getByRequestId(ctx) {
   }
 
   const {page=1, limit=100, order="dateCreated", direction='ASC'} = ctx.request.query;
-  const result = await messages.getByRequestId(requestID, page, limit, order, direction);
+  let resultLimit = parseInt(limit);
+  let resultPage = parseInt(page);
+  resultLimit = resultLimit > 100 ? 100 : resultLimit;
+  resultLimit = resultLimit < 1 ? 10 : resultLimit;
+  resultPage = resultPage < 1 ? 1 : resultPage;
+  const result = await messages.getByRequestId(requestID, resultPage, resultLimit, order, direction);
+  
+  const isNextPageAvailable = result && result.length > resultLimit
+  const isPrevPageAvailable =  resultPage - 1 > 1
+  
   if (result.length) {
     const body = result.map(msg => {
       const {ID, message, senderID, receiverID, requestID, dateCreated} = msg;
       return {ID, message, senderID, receiverID, requestID, dateCreated};
     });
-    ctx.body = body;
+    ctx.body = {
+      messages: body,
+      next: isNextPageAvailable && `${ctx.request.path}?page=${resultPage + 1}`,
+      prev: isPrevPageAvailable && `${ctx.request.path}?page=${resultPage}`,
+    };
   } else {
     ctx.body = []
   }

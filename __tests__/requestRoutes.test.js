@@ -66,8 +66,8 @@ describe("Retrieve a request", () => {
       .get("/api/v1/requests/user/2")
       .set("Authorization", "Basic " + user2token)
     expect(res.statusCode).toEqual(200);
-    expect(res.body.length).toEqual(1);
-    expect(res.body[0]).toHaveProperty('title', 'Request title');
+    expect(res.body.requests.length).toEqual(1);
+    expect(res.body.requests[0]).toHaveProperty('title', 'Request title');
   });
 });
 

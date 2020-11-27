@@ -51,11 +51,22 @@ router.post(
 async function getAll(ctx) {
   const {
     page = 1,
-    limit = 100,
+    limit = 14,
     order = "dateCreated",
     direction = "ASC",
   } = ctx.request.query;
-  const result = await books.getAll(page, limit, order, direction);
+
+  let resultLimit = parseInt(limit);
+  let resultPage = parseInt(page);
+
+  resultLimit = resultLimit > 100 ? 100 : resultLimit;
+  resultLimit = resultLimit < 1 ? 10 : resultLimit;
+  resultPage = resultPage < 1 ? 1 : resultPage;
+  const result = await books.getAll(resultPage, resultLimit, order, direction);
+  
+  const isNextPageAvailable = result && result.length > resultLimit
+  const isPrevPageAvailable =  resultPage - 1 > 1
+
   if (result.length) {
     const body = result.map((book) => {
       const {
@@ -86,7 +97,11 @@ async function getAll(ctx) {
       };
     });
 
-    ctx.body = body;
+    ctx.body = {
+      books: body,
+      next: isNextPageAvailable && `${ctx.request.path}?page=${resultPage + 1}`,
+      prev: isPrevPageAvailable && `${ctx.request.path}?page=${resultPage}`,
+    };
   } else {
     ctx.body = [];
   }
@@ -100,7 +115,19 @@ async function getByUserId(ctx) {
     order = "dateCreated",
     direction = "ASC",
   } = ctx.request.query;
-  const result = await books.getByUserId(userID, page, limit, order, direction);
+
+  let resultLimit = parseInt(limit);
+  let resultPage = parseInt(page);
+
+  resultLimit = resultLimit > 100 ? 100 : resultLimit;
+  resultLimit = resultLimit < 1 ? 10 : resultLimit;
+  resultPage = resultPage < 1 ? 1 : resultPage;
+
+  const result = await books.getByUserId(userID, resultPage, resultLimit, order, direction);
+  
+  const isNextPageAvailable = result && result.length > resultLimit
+  const isPrevPageAvailable =  resultPage - 1 > 1
+
   if (result.length) {
     const body = result.map((book) => {
       const {
@@ -131,7 +158,11 @@ async function getByUserId(ctx) {
       };
     });
 
-    ctx.body = body;
+    ctx.body = {
+      books: body,
+      next: isNextPageAvailable && `${ctx.request.path}?page=${resultPage + 1}`,
+      prev: isPrevPageAvailable && `${ctx.request.path}?page=${resultPage}`,
+    };
   } else {
     ctx.body = [];
   }
@@ -199,7 +230,7 @@ async function updateStatus(ctx) {
   let result = await books.getById(parseInt(bookID));
   let book = result[0];
   const { requestID } = book;
-  
+
   if (!book) {
     ctx.status = 404;
     return;
@@ -218,7 +249,7 @@ async function updateStatus(ctx) {
     const request = requestById[0];
     let bookUpdateResult;
     let requestUpdateResult;
-    
+
     switch (status) {
       case "On Loan":
         // If changing status to on loan
@@ -253,7 +284,7 @@ async function updateStatus(ctx) {
     if (bookUpdateResult.affectedRows && requestUpdateResult.affectedRows) {
       ctx.body = { ID: bookID, updated: true, link: ctx.request.path };
     }
-    return
+    return;
   }
 
   // If book was not on request

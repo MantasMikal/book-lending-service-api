@@ -27,8 +27,8 @@ describe("Search books", () => {
     const res = await request(app.callback())
       .get("/api/v1/search/books?q=Lorem")
     expect(res.statusCode).toEqual(200);
-    expect(res.body.length).toBe(1)
-    expect(res.body[0]).toHaveProperty('ID', 1)
+    expect(res.body.books.length).toBe(1)
+    expect(res.body.books[0]).toHaveProperty('ID', 1)
   });
 
   it("should search user books", async () => {
@@ -36,7 +36,7 @@ describe("Search books", () => {
       .get("/api/v1/search/books?q=Lorem&userID=1")
       .set("Authorization", "Basic " + user1token)
     expect(res.statusCode).toEqual(200);
-    expect(res.body.length).toBe(1)
-    expect(res.body[0]).toHaveProperty('ID', 1)
+    expect(res.body.books.length).toBe(1)
+    expect(res.body.books[0]).toHaveProperty('ID', 1)
   });
 });
