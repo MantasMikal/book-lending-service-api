@@ -1,7 +1,7 @@
 const request = require("supertest");
 const app = require("../app");
 const btoa = require("../helpers/btoa");
-const { exec } = require("child_process");
+const runPreTest = require("../helpers/runPreTest");
 
 // Exists in db
 const mockUsers = [
@@ -25,16 +25,10 @@ const mockBook = {
 
 const password = "password";
 const token = btoa(mockUsers[0].username + ":" + password);
+const token2 = btoa(mockUsers[1].username + ":" + password);
 
 beforeEach((done) => {
-  const p = exec("npm run pretest", (error) => {
-    if (error) {
-      throw Error(error)
-    }
-  });
-  p.on('close', () => {
-    done()
-  })
+  runPreTest(done);
 });
 
 describe("Post new book", () => {
@@ -83,14 +77,13 @@ describe("Update books", () => {
       .send({ ...mockBook, title: "Renamed book" });
     expect(res.statusCode).toEqual(200);
     expect(res.body).toHaveProperty("updated", true);
-  
+
     const updatedBook = await request(app.callback()).get("/api/v1/books/1");
     expect(updatedBook.statusCode).toEqual(200);
     expect(updatedBook.body).toEqual(
       expect.objectContaining({ title: "Renamed book" })
     );
   });
-
 
   it("should update book status", async () => {
     const res = await request(app.callback())
@@ -119,5 +112,44 @@ describe("Delete a book", () => {
     const deletedBook = await request(app.callback()).get("/api/v1/books/1");
     expect(deletedBook.statusCode).toEqual(200);
     expect(deletedBook.body).toEqual([]);
+  });
+});
+
+describe("Secured routes", () => {
+  it("should not allow unauthenticated user to post a book", async () => {
+    const res = await request(app.callback())
+      .post("/api/v1/books")
+      .send(mockBook);
+    expect(res.statusCode).toEqual(401);
+  });
+
+  it("should not allow unauthenticated user to update a book", async () => {
+    const res = await request(app.callback())
+      .put("/api/v1/books/1")
+      .send({ ...mockBook, title: "Renamed book" });
+    expect(res.statusCode).toEqual(401);
+  });
+
+  it("should only allow book owner to update a book", async () => {
+    const res = await request(app.callback())
+      .put("/api/v1/books/1")
+      .set("Authorization", "Basic " + token2)
+      .send({ ...mockBook, title: "Renamed book" });
+    expect(res.statusCode).toEqual(403);
+  });
+
+  it("should only allow book owner to update a book status", async () => {
+    const res = await request(app.callback())
+      .post("/api/v1/books/status/1")
+      .set("Authorization", "Basic " + token2)
+      .send({ status: "Requested" });
+      expect(res.statusCode).toEqual(403);
+  });
+
+  it("should only allow book owner to delete a book", async () => {
+    const res = await request(app.callback())
+      .del("/api/v1/books/1")
+      .set("Authorization", "Basic " + token2)
+    expect(res.statusCode).toEqual(403);
   });
 });

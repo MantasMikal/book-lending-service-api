@@ -14,6 +14,7 @@ const mockUser = {
 
 const password = "password";
 const token = btoa(mockUser.username + ":" + password);
+const token2 = btoa("user1:" + password);
 
 describe("Post new user", () => {
   it("should create a new user", async () => {
@@ -38,3 +39,49 @@ describe("Post new user", () => {
     expect(res.body).toHaveProperty("username", mockUser.username);
   });
 });
+
+describe("Retrieve users", () => {
+  it("should retrieve user by ID", async () => {
+    const res = await request(app.callback())
+      .get(`/api/v1/users/4`)
+      .set("Authorization", "Basic " + token);
+    expect(res.statusCode).toEqual(200);
+    expect(res.body).toEqual(expect.objectContaining(mockUser));
+  });
+});
+
+describe("Secured routes", () => {
+  it("should not allow unauthenticated user to read by id", async () => {
+    const res = await request(app.callback())
+    .get(`/api/v1/users/4`)
+    expect(res.statusCode).toEqual(401);
+  })
+
+  it("should not allow unauthenticated user to delete by id", async () => {
+    const res = await request(app.callback())
+    .del(`/api/v1/users/4`)
+    expect(res.statusCode).toEqual(401);
+  })
+
+  it("should not allow unauthenticated user to update by id", async () => {
+    const res = await request(app.callback())
+    .put(`/api/v1/users/4`)
+    .send({username: 'Hey'})
+    expect(res.statusCode).toEqual(401);
+  })
+
+  it("should only allow account owner to update", async () => {
+    const res = await request(app.callback())
+    .put(`/api/v1/users/4`)
+    .set("Authorization", "Basic " + token2)
+    .send({...mockUser, fullName: 'user99', username: undefined})
+    expect(res.statusCode).toEqual(403);
+  })
+
+  it("should only allow account owner to delete", async () => {
+    const res = await request(app.callback())
+    .del(`/api/v1/users/4`)
+    .set("Authorization", "Basic " + token2)
+    expect(res.statusCode).toEqual(403);
+  })
+})

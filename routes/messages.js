@@ -28,9 +28,10 @@ async function createMessage(ctx) {
   const permission = can.write(ctx.state.user, request)
 
   if(!permission.granted) {
-    ctx.status = 401
+    ctx.status = 403
     return
   }
+
   const result = await messages.add(body);
   if (result.affectedRows) {
     const id = result.insertId;
@@ -50,7 +51,7 @@ async function getByRequestId(ctx) {
   }
   const permission = can.read(ctx.state.user, request)
   if(!permission.granted) {
-    ctx.status = 401
+    ctx.status = 403
     return
   }
 

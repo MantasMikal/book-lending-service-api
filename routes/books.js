@@ -233,8 +233,8 @@ async function updateStatus(ctx) {
 
       case "Available":
         // If changing status to available
-        // Means the book was returned
-        // Remove the request from book
+        // Means the book was returned/no longer on loN
+        // Remove associated request from book
         // Set request status to complete
         bookUpdateResult = await requests.update({
           ...request,

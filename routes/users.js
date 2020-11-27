@@ -11,7 +11,6 @@ const {
 const prefix = "/api/v1/users";
 const router = Router({ prefix: prefix });
 
-router.get("/", auth, getAll);
 router.post("/", bodyParser(), validateUser, createUser);
 router.post("/login", auth, login);
 router.get("/:id([0-9]{1,})", auth, getById);
@@ -31,18 +30,6 @@ async function login(ctx) {
     self: `${ctx.protocol}://${ctx.host}${prefix}/${ID}`,
   };
   ctx.body = { ID, username, email, links };
-}
-
-async function getAll(ctx) {
-  const permission = can.readAll(ctx.state.user);
-  if (!permission.granted) {
-    ctx.status = 403;
-  } else {
-    const result = await model.getAll();
-    if (result.length) {
-      ctx.body = result;
-    }
-  }
 }
 
 async function getById(ctx) {

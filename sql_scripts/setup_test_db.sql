@@ -79,9 +79,10 @@ ALTER TABLE books
 
 INSERT INTO users (username, fullName, password, email, country, city, postcode, address) VALUES ('user1', 'User 1', '$2b$10$o8or.rOS9bAzz.Dd7Hbli.KTXh1P/ZRZSaff0tA7fBdocgjjsSXh6', 'user1@user.com', 'Country', 'City', 'Postcode', 'Address');
 INSERT INTO users (username, fullName, password, email, country, city, postcode, address) VALUES ('user2', 'User 2', '$2b$10$o8or.rOS9bAzz.Dd7Hbli.KTXh1P/ZRZSaff0tA7fBdocgjjsSXh6', 'user2@user.com', 'Country', 'City', 'Postcode', 'Address');
+INSERT INTO users (username, fullName, password, email, country, city, postcode, address) VALUES ('user3', 'User 3', '$2b$10$o8or.rOS9bAzz.Dd7Hbli.KTXh1P/ZRZSaff0tA7fBdocgjjsSXh6', 'user3@user.com', 'Country', 'City', 'Postcode', 'Address');
 
-INSERT INTO books (title, summary, author, yearPublished, ownerID) VALUES ('Book 1', 'A summray', 'Mantas', '2019', 1);
-INSERT INTO books (title, summary, author, yearPublished, ownerID) VALUES ('Book 2', 'A summray', 'Mantas', '2019', 1);
+INSERT INTO books (title, summary, author, yearPublished, ownerID) VALUES ('Lorem', 'A summray', 'Mantas', '2019', 1);
+INSERT INTO books (title, summary, author, yearPublished, ownerID) VALUES ('Ipsum', 'A summray', 'Mantas', '2019', 1);
 
 INSERT INTO requests(title, requesterID, bookID, bookOwnerID) VALUES ('Request title', 2, 1, 1);
 

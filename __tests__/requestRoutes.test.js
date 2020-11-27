@@ -1,7 +1,7 @@
 const request = require("supertest");
 const app = require("../app");
 const btoa = require("../helpers/btoa");
-const { exec } = require("child_process");
+const runPreTest = require("../helpers/runPreTest")
 
 // Exists in db
 const mockUsers = [
@@ -12,6 +12,10 @@ const mockUsers = [
   {
     username: "user2",
     ID: 2,
+  },
+  {
+    username: "user3",
+    ID: 3,
   },
 ];
 
@@ -24,16 +28,10 @@ const mockRequest = {
 const password = "password";
 const user1token = btoa(mockUsers[0].username + ":" + password);
 const user2token = btoa(mockUsers[1].username + ":" + password);
+const user3token = btoa(mockUsers[2].username + ":" + password);
 
 beforeEach((done) => {
-  const p = exec("npm run pretest", (error, stdout) => {
-    if (error) {
-      throw Error(error)
-    }
-  });
-  p.on('close', () => {
-    done()
-  })
+  runPreTest(done)
 });
 
 describe("Make a new request", () => {
@@ -115,5 +113,35 @@ describe("Delete request", () => {
     .set("Authorization", "Basic " + user2token)
     expect(deletedBook.statusCode).toEqual(200);
     expect(deletedBook.body).toStrictEqual({})
+  });
+});
+
+describe("Secured routes and roles", () => {
+  it("should only allow requests owner to read its requests", async () => {
+    const res = await request(app.callback())
+      .get("/api/v1/requests/user/1")
+      .set("Authorization", "Basic " + user3token)
+    expect(res.statusCode).toEqual(401);
+  });
+
+  it("should only allow participant in request to read it", async () => {
+    const res = await request(app.callback())
+      .get("/api/v1/requests/1")
+      .set("Authorization", "Basic " + user3token)
+    expect(res.statusCode).toEqual(401);
+  });
+
+  it("should only allow participant to archive it", async () => {
+    const res = await request(app.callback())
+      .post("/api/v1/requests/archive/1")
+      .set("Authorization", "Basic " + user3token)
+    expect(res.statusCode).toEqual(401);
+  });
+
+  it("should only allow requester to delete/cancel it", async () => {
+    const res = await request(app.callback())
+      .del("/api/v1/requests/1")
+      .set("Authorization", "Basic " + user3token)
+    expect(res.statusCode).toEqual(401);
   });
 });

@@ -130,7 +130,7 @@ async function archiveRequest(ctx) {
 
   const permission = can.update(user, request);
   if (!permission.granted) {
-    ctx.status = 403;
+    ctx.status = 401;
     return;
   }
 
