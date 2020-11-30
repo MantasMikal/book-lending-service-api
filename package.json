@@ -10,7 +10,9 @@
     "testDB:create": "mysql --user=root --password=p455w0rd -e 'CREATE DATABASE test_db;'",
     "testDB:setup": "mysql --user=root --password=p455w0rd test_db < ./sql_scripts/setup_test_db.sql",
     "pretest": "npm run testDB:drop && npm run testDB:create && npm run testDB:setup",
-    "start": "nodemon index.js"
+    "start": "nodemon index.js",
+    "docs": "npm run docs:generate && nodemon docs.js",
+    "docs:generate": "node_modules/.bin/jsdoc -c jsdoc.conf.json"
   },
   "author": "",
   "license": "ISC",
@@ -18,7 +20,6 @@
     "@koa/cors": "^3.1.0",
     "bcrypt": "^5.0.0",
     "fs-extra": "^9.0.1",
-    "jsdoc": "^3.6.6",
     "jsonschema": "^1.2.11",
     "koa": "^2.13.0",
     "koa-bodyparser": "^4.3.0",
@@ -36,7 +37,10 @@
   "devDependencies": {
     "cross-env": "^7.0.2",
     "jest": "^26.6.3",
+    "jsdoc": "^3.6.6",
+    "jsdoc-route-plugin": "^0.1.0",
     "nodemon": "^2.0.6",
+    "redoc": "^2.0.0-rc.45",
     "supertest": "^6.0.1"
   },
   "jest": {

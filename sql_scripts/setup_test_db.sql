@@ -85,6 +85,7 @@ INSERT INTO books (title, summary, author, yearPublished, ownerID) VALUES ('Lore
 INSERT INTO books (title, summary, author, yearPublished, ownerID) VALUES ('Ipsum', 'A summray', 'Mantas', '2019', 1);
 
 INSERT INTO requests(title, requesterID, bookID, bookOwnerID) VALUES ('Request title', 2, 1, 1);
+INSERT INTO requests(title, requesterID, bookID, bookOwnerID, status) VALUES ('Request title', 2, 1, 1, 'Completed');
 
 INSERT INTO messages(message, senderID, receiverID, requestID) VALUES ('Mock message', 1, 2, 1);
 

@@ -24,8 +24,49 @@
           "type": "number"
         }
       },
-      "required": ["message", "senderID", "receiverID"],
+      "required": ["message", "senderID", "receiverID", "requestID"],
       "additionalProperties": false
+    },
+
+    "messageList": {
+      "$id": "#messageList",
+      "title": "Message List",
+      "description": "List of all Messages",
+      "properties": {
+        "books": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/message" }
+        },
+        "next": {
+          "type": "string",
+          "description": "A link to the next page"
+        },
+        "prev": {
+          "type": "string",
+          "description": "A link to the previous page"
+        }
+      }
+    },
+
+    "messageCreated": {
+      "$id": "#messageCreated",
+      "title": "Message created",
+      "description": "Confirmation of a successful message creation",
+      "type": "object",
+      "properties": {
+        "ID": {
+          "description": "ID of the created message record",
+          "type": "integer"
+        },
+        "created": {
+          "description": "Boolean indicator of success",
+          "type": "boolean"
+        },
+        "link": {
+          "description": "A link to access the message",
+          "type": "string"
+        }
+      }
     }
   }
 }

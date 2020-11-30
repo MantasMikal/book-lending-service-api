@@ -4,7 +4,7 @@
     "request": {
       "$id": "/request",
       "title": "request",
-      "description": "A book request",
+      "description": "A request request",
       "type": "object",
       "properties": {
         "title": {
@@ -18,10 +18,93 @@
         "bookID": {
           "description": "ID of the requested book",
           "type": "number"
+        },
+        "status": {
+          "description": "Initial status of the request. Default 'Open'",
+          "type": "string"
         }
       },
       "required": ["title", "requesterID", "bookID"],
       "additionalProperties": false
+    },
+
+    "requestCreated": {
+      "$id": "#requestCreated",
+      "title": "Request created",
+      "description": "Confirmation of a successful request creation",
+      "type": "object",
+      "properties": {
+        "ID": {
+          "description": "ID of the created request record",
+          "type": "integer"
+        },
+        "created": {
+          "description": "Boolean indicator of success",
+          "type": "boolean"
+        },
+        "link": {
+          "description": "A link to access the request",
+          "type": "string"
+        }
+      }
+    },
+
+    "requestDeleted": {
+      "$id": "#requestDeleted",
+      "title": "Request deleted",
+      "description": "Confirmation of a successful request deletion",
+      "type": "object",
+      "properties": {
+        "ID": {
+          "description": "ID of the deleted request record",
+          "type": "integer"
+        },
+        "deleted": {
+          "description": "Boolean indicator of success",
+          "type": "boolean"
+        }
+      }
+    },
+
+    "requestUpdated": {
+      "$id": "#requestUpdated",
+      "title": "Request updated",
+      "description": "Confirmation of a successful request update",
+      "type": "object",
+      "properties": {
+        "ID": {
+          "description": "ID of the updated request record",
+          "type": "integer"
+        },
+        "updated": {
+          "description": "Boolean indicator of success",
+          "type": "boolean"
+        },
+        "link": {
+          "description": "A link to access the request",
+          "type": "string"
+        }
+      }
+    },
+
+    "requestList": {
+      "$id": "#requestList",
+      "title": "Request List",
+      "description": "List of all requests",
+      "properties": {
+        "requests": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/request" }
+        },
+        "next": {
+          "type": "string",
+          "description": "A link to the next page"
+        },
+        "prev": {
+          "type": "string",
+          "description": "A link to the previous page"
+        }
+      }
     }
   }
 }

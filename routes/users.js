@@ -1,3 +1,9 @@
+/**
+ * User routes
+ * Handles user specific routes
+ * @module routes/Users
+ */
+
 const Router = require("koa-router");
 const bodyParser = require("koa-bodyparser");
 const model = require("../models/users");
@@ -23,6 +29,11 @@ router.put(
 );
 router.del("/:id([0-9]{1,})", auth, deleteUser);
 
+/**
+ * Logs the user in
+ * @headerparam authorization user authentication token for Basic Auth
+ * @route {POST} /login
+ */
 async function login(ctx) {
   // return any details needed by the client
   const { ID, username, email } = ctx.state.user;
@@ -32,6 +43,11 @@ async function login(ctx) {
   ctx.body = { ID, username, email, links };
 }
 
+/**
+ * Gets user by its ID
+ * @queryparam {Number} id id of the user
+ * @route {GET} /users/:id
+ */
 async function getById(ctx) {
   const id = ctx.params.id;
   const userById = await model.getById(id);
@@ -63,6 +79,18 @@ async function getById(ctx) {
   };
 }
 
+/**
+ * Creates a new user account
+ * @bodyparam {String} email user email
+ * @bodyparam {String} username user username
+ * @bodyparam {String} fullName user full name
+ * @bodyparam {String} password user password
+ * @bodyparam {Sting} country user country
+ * @bodyparam {Object} city user city
+ * @bodyparam {String} postcode user postcode
+ * @bodyparam {String} address user address
+ * @route {POST} /login
+ */
 async function createUser(ctx) {
   const body = ctx.request.body;
   const result = await model.add(body);
@@ -73,6 +101,18 @@ async function createUser(ctx) {
   }
 }
 
+/**
+ * Updates a user
+ * @headerparam authorization user authentication token for Basic Auth
+ * @bodyparam {String} email user email
+ * @bodyparam {String} username user username
+ * @bodyparam {String} fullName user full name
+ * @bodyparam {Sting} country user country
+ * @bodyparam {Object} city user city
+ * @bodyparam {String} postcode user postcode
+ * @bodyparam {String} address user address
+ * @route {PUT} /users/:id
+ */
 async function updateUser(ctx) {
   const id = ctx.params.id;
   let result = await model.getById(id); // check it exists
@@ -93,6 +133,11 @@ async function updateUser(ctx) {
   }
 }
 
+/**
+ * Deletes a user
+ * @headerparam authorization user authentication token for Basic Auth
+ * @route {DELETE} /users/:id
+ */
 async function deleteUser(ctx) {
   const id = ctx.params.id;
   let result = await model.getById(id);

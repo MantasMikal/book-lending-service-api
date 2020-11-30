@@ -1,3 +1,9 @@
+/**
+ * Messages routes
+ * Handles Messages specific routes
+ * @module routes/Messages
+ */
+
 const Router = require('koa-router');
 const bodyParser = require('koa-bodyparser');
 
@@ -16,6 +22,16 @@ const router = Router({prefix: prefix});
 router.post('/', auth, bodyParser(), validateMessage, createMessage);
 router.get('/:requestID([0-9]{1,})', auth, getByRequestId);
 
+
+/**
+ * Creates a new message
+ * @headerparam authorization user authentication token for Basic Auth
+ * @bodyparam {String} message message
+ * @bodyparam {Number} senderID user ID of the sender 
+ * @bodyparam {Number} receiverID user ID of the receiver 
+ * @bodyparam {Number} requestID ID of the request
+ * @route {POST} /messages/
+ */
 async function createMessage(ctx) {
   const { body } = ctx.request;
   const { requestID } = body
@@ -40,6 +56,16 @@ async function createMessage(ctx) {
   }
 }
 
+/**
+ * Gets all messages by request ID
+ * @headerparam authorization user authentication token for Basic Auth
+ * @queryparam {Number} requestID id of the request
+ * @queryparam {Number} page page to retrieve
+ * @queryparam {Number} limit amount of results to retrieve
+ * @queryparam {String} order field to order results by
+ * @queryparam {String} direction direction to order results by
+ * @route {GET} /messages/:requestID
+ */
 async function getByRequestId(ctx) {
   const { requestID } = ctx.params;
   const requestById = await requests.getById(requestID)
