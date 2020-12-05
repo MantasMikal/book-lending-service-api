@@ -4,13 +4,7 @@ const serve = require('koa-static');
 const mount = require('koa-mount')
 const app = new Koa();
 
-const corsOptions = {
-  origin: [
-    '*'
-  ]
-}
-
-app.use(cors(corsOptions));
+app.use(cors());
 
 const messages = require('./routes/messages.js')
 const users = require('./routes/users.js');
