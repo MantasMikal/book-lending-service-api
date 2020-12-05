@@ -53,7 +53,7 @@ describe("Make a new request", () => {
 });
 
 describe("Retrieve a request", () => {
-  it("should retrieve a requests by ID", async () => {
+  it("should retrieve a request by ID", async () => {
     const res = await request(app.callback())
       .get("/api/v1/requests/1")
       .set("Authorization", "Basic " + user2token)
@@ -61,12 +61,12 @@ describe("Retrieve a request", () => {
     expect(res.body).toHaveProperty('title', 'Request title');
   });
 
-  it("should retrieve a requests by user ID", async () => {
+  it("should retrieve all requests by user ID", async () => {
     const res = await request(app.callback())
       .get("/api/v1/requests/user/2")
       .set("Authorization", "Basic " + user2token)
     expect(res.statusCode).toEqual(200);
-    expect(res.body.requests.length).toEqual(1);
+    expect(res.body.requests.length).toEqual(2);
     expect(res.body.requests[0]).toHaveProperty('title', 'Request title');
   });
 });
@@ -74,12 +74,12 @@ describe("Retrieve a request", () => {
 describe("Archive a request", () => {
   it("should archive requester request", async () => {
     const res = await request(app.callback())
-      .post("/api/v1/requests/archive/1")
+      .post("/api/v1/requests/archive/2")
       .set("Authorization", "Basic " + user2token)
     expect(res.statusCode).toEqual(200);
     expect(res.body).toHaveProperty("updated", true);
     const bookRequest = await request(app.callback())
-      .get(`/api/v1/requests/1`)
+      .get(`/api/v1/requests/2`)
       .set("Authorization", "Basic " + user2token);
     expect(bookRequest.statusCode).toEqual(200);
     expect(bookRequest.body).toEqual(expect.objectContaining({isArchivedByRequester: 1}));
@@ -87,13 +87,13 @@ describe("Archive a request", () => {
 
   it("should archive receiver request", async () => {
     const res = await request(app.callback())
-      .post("/api/v1/requests/archive/1")
+      .post("/api/v1/requests/archive/2")
       .set("Authorization", "Basic " + user1token)
     expect(res.statusCode).toEqual(200);
     expect(res.body).toHaveProperty("updated", true);
 
     const bookRequest = await request(app.callback())
-      .get(`/api/v1/requests/1`)
+      .get(`/api/v1/requests/2`)
       .set("Authorization", "Basic " + user1token);
     expect(bookRequest.statusCode).toEqual(200);
     expect(bookRequest.body).toEqual(expect.objectContaining({isArchivedByReceiver: 1}));

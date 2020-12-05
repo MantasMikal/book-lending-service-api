@@ -1,7 +1,17 @@
+/**
+ * Users model
+ * Handles database CRUD operations
+ * @module models/Users
+ */
+
 const db = require('../helpers/database');
 const bcrypt = require('bcrypt');
 
-//get a single user by its id  
+/**
+ * Gets a single user by ID
+ * @param {Number} id ID of the user
+ * @returns {Array} array with a single user
+ */
 exports.getById = async function getById (id) {
   const query = "SELECT * FROM users WHERE ID = ?;";
   const values = [id];
@@ -9,21 +19,44 @@ exports.getById = async function getById (id) {
   return data;
 }
 
-//get a single user by the (unique) username
+/**
+ * Gets a single user by username
+ * @param {String} username username of the user
+ * @returns {Array} array with a single user
+ */
 exports.findByUsername = async function getByUsername(username) {
   const query = "SELECT * FROM users WHERE username = ?;";
   const user = await db.run_query(query, username);
   return user;
 }
 
-//list all the users in the database
+/**
+ * Gets all users from the database
+ * @param {Number} page page to retrieve
+ * @param {Number} limit amount of results to retrieve
+ * @param {String} order field to order results by
+ * @returns {Array} array containing all users
+ */
 exports.getAll = async function getAll (page, limit, order) {
-  const query = "SELECT * FROM users;";
-  const data = await db.run_query(query);
+  const offset = (page - 1) * limit;
+  const values = [order, parseInt(limit), parseInt(offset)];
+  const query = "SELECT * FROM users ORDER BY ?? LIMIT ? OFFSET ?;";
+  const data = await db.run_query(query, values);
   return data;
 }
 
-//create a new user in the database
+/**
+ * Creates a new user
+ * @param {String} user.email user email
+ * @param {String} user.username user username
+ * @param {String} user.fullName user full name
+ * @param {String} user.password user password
+ * @param {Sting} user.country user country
+ * @param {Object} user.city user city
+ * @param {String} user.postcode user postcode
+ * @param {String} user.address user address
+ * @returns {Object} operation status
+ */
 exports.add = async function add (user) {
   const query = "INSERT INTO users SET ?";
   const password = user.password;
@@ -33,7 +66,11 @@ exports.add = async function add (user) {
   return data;
 }
 
-//delete a user by its id
+/**
+ * Deletes a single user by ID
+ * @param {Number} id ID of the user
+ * @returns {Object} operation status
+ */
 exports.delById = async function delById (id) {
   const query = "DELETE FROM users WHERE ID = ?;";
   const values = [id];
@@ -41,7 +78,18 @@ exports.delById = async function delById (id) {
   return data;
 }
 
-//update an existing user
+/**
+ * Updates an existing user
+ * @param {String} user.email user email
+ * @param {String} user.username user username
+ * @param {String} user.fullName user full name
+ * @param {String} user.password user password
+ * @param {Sting} user.country user country
+ * @param {Object} user.city user city
+ * @param {String} user.postcode user postcode
+ * @param {String} user.address user address
+ * @returns {Object} operation status
+ */
 exports.update = async function update (user) {
   const query = "UPDATE users SET ? WHERE ID = ?;";
   if (user.password) {

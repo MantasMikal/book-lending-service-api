@@ -1,3 +1,9 @@
+/**
+ * Requests routes
+ * Handles request specific routes
+ * @module routes/Requests
+ */
+
 const Router = require("koa-router");
 const bodyParser = require("koa-bodyparser");
 
@@ -19,6 +25,14 @@ router.get("/:requestID([0-9]{1,})", auth, getByRequestId);
 router.post("/archive/:requestID([0-9]{1,})", auth, archiveRequest);
 router.del("/:requestID([0-9]{1,})", auth, delByRequestId);
 
+/**
+ * Creates a new request
+ * @headerparam authorization user authentication token for Basic Auth
+ * @bodyparam {String} title request title
+ * @bodyparam {Number} requesterID user ID of the requester
+ * @bodyparam {Number} bookID book ID
+ * @route {POST} /requests
+ */
 async function createRequest(ctx) {
   const { body } = ctx.request;
   const { requesterID, bookID } = body;
@@ -34,13 +48,13 @@ async function createRequest(ctx) {
   const { requestID, ownerID } = book;
   if (requesterID === ownerID) {
     ctx.status = 200;
-    ctx.body = { rejected: true, info: "Can't request your own books" };
+    ctx.body = { created: false, info: "Can't request your own books" };
     return;
   }
 
   if (requestID) {
     ctx.status = 200;
-    ctx.body = { rejected: true, info: "Book already requested" };
+    ctx.body = { created: false, info: "Book already requested" };
     return;
   }
 
@@ -59,6 +73,16 @@ async function createRequest(ctx) {
   }
 }
 
+/**
+ * Gets all user requests by its ID
+ * @headerparam authorization user authentication token for Basic Auth
+ * @queryparam {Number} userID id of the user
+ * @queryparam {Number} page page to retrieve
+ * @queryparam {Number} limit amount of results to retrieve
+ * @queryparam {String} order field to order results by
+ * @queryparam {String} direction direction to order results by
+ * @route {GET} /requests/:userID
+ */
 async function getByUserId(ctx) {
   const { userID } = ctx.params;
   const permission = can.read(ctx.state.user, parseInt(userID));
@@ -73,7 +97,7 @@ async function getByUserId(ctx) {
     order = "dateCreated",
     direction = "DESC",
   } = ctx.request.query;
-  
+
   let resultLimit = parseInt(limit);
   let resultPage = parseInt(page);
 
@@ -89,8 +113,8 @@ async function getByUserId(ctx) {
     direction
   );
 
-  const isNextPageAvailable = result && result.length > resultLimit
-  const isPrevPageAvailable =  resultPage - 1 > 1
+  const isNextPageAvailable = result && result.length > resultLimit;
+  const isPrevPageAvailable = resultPage - 1 > 1;
 
   if (result.length) {
     ctx.body = {
@@ -99,21 +123,27 @@ async function getByUserId(ctx) {
       prev: isPrevPageAvailable && `${ctx.request.path}?page=${resultPage}`,
     };
   } else {
-    ctx.body = [];
+    ctx.body = {requests: []};
   }
 }
 
+/**
+ * Gets request by its ID
+ * @headerparam authorization user authentication token for Basic Auth
+ * @queryparam {Number} requestID id of the request
+ * @route {GET} /requests/:requestID
+ */
 async function getByRequestId(ctx) {
   const { requestID } = ctx.params;
   const requestByID = await requests.getById(requestID);
   const request = requestByID[0];
-  
+
   if (!request) {
     ctx.body = {};
     return;
   }
 
-  const {bookID} = request
+  const { bookID } = request;
 
   const permission = can.readByRequestId(ctx.state.user, request);
 
@@ -122,20 +152,26 @@ async function getByRequestId(ctx) {
     return;
   }
 
-  const book = await books.getById(bookID)
+  const book = await books.getById(bookID);
   const result = await requests.getById(requestID);
   if (result.length && result[0]) {
-    ctx.body = {...result[0], bookStatus: book[0].status};
+    ctx.body = { ...result[0], bookStatus: book[0].status };
   } else {
     ctx.body = {};
   }
 }
 
+/**
+ * Archives already completed request for a user
+ * @headerparam authorization user authentication token for Basic Auth
+ * @queryparam {Number} requestID id of the request
+ * @route {POST} /requests/archive/:requestID
+ */
 async function archiveRequest(ctx) {
   const { requestID } = ctx.params;
   const requestByID = await requests.getById(requestID); // check it exists
   const request = requestByID[0];
-  const { requesterID, bookOwnerID } = request;
+  const { requesterID, bookOwnerID, status } = request;
   const { user } = ctx.state;
   let updateResult;
 
@@ -148,6 +184,13 @@ async function archiveRequest(ctx) {
   if (!permission.granted) {
     ctx.status = 401;
     return;
+  }
+
+
+  // Only allow archiving of completed requests
+  if (status !== "Completed") {
+    ctx.body = { ID: requestID, updated: false, link: ctx.request.path };
+    return
   }
 
   // Archive for requester
@@ -171,13 +214,20 @@ async function archiveRequest(ctx) {
   }
 }
 
+/**
+ * Deletes a request and its associated messages.
+ * Used to cancel a book request. Makes the book available to loan
+ * @headerparam authorization user authentication token for Basic Auth
+ * @queryparam {Number} requestID id of the request
+ * @route {DELETE} /requests/:requestID
+ */
 async function delByRequestId(ctx) {
   const { requestID } = ctx.params;
   const requestByID = await requests.getById(requestID);
   const request = requestByID[0];
-  const { requesterID, bookID } = request
-  const bookByID = await books.getById(bookID)
-  const book = bookByID[0]
+  const { requesterID, bookID } = request;
+  const bookByID = await books.getById(bookID);
+  const book = bookByID[0];
 
   if (!request || !book) {
     ctx.status = 404;
@@ -190,11 +240,15 @@ async function delByRequestId(ctx) {
     return;
   }
 
-  const bookUpdate = await books.update({...book, status: 'Available', requestID: null})
-  const deleteResult = await requests.delById(requestID)
+  const bookUpdate = await books.update({
+    ...book,
+    status: "Available",
+    requestID: null,
+  });
+  const deleteResult = await requests.delById(requestID);
 
-  if(bookUpdate.affectedRows && deleteResult.affectedRows) {
-    ctx.body = {ID: requestID, deleted: true}
+  if (bookUpdate.affectedRows && deleteResult.affectedRows) {
+    ctx.body = { ID: requestID, deleted: true };
   }
 }
 

@@ -1,6 +1,16 @@
+/**
+ * Messages model
+ * Handles database CRUD operations
+ * @module models/Messages
+ */
+
 const db = require("../helpers/database");
 
-//get a single message request by its id
+/**
+ * Gets a single message by ID
+ * @param {Number} id ID of the book
+ * @returns {Array} array with a single message
+ */
 exports.getById = async function getById(id) {
   const query = "SELECT * FROM messages WHERE ID = ?;";
   const values = [id];
@@ -8,34 +18,55 @@ exports.getById = async function getById(id) {
   return data;
 };
 
-//get all the messages by request id
+/**
+ * Gets all messages by request ID from the database
+ * @param {Number} requestID request ID
+ * @param {Number} page page to retrieve
+ * @param {Number} limit amount of results to retrieve
+ * @param {String} order field to order results by
+ * @param {String} direction direction to order results by
+ * @returns {Array} array containing all messages
+ */
 exports.getByRequestId = async function getByRequestId(
   requestID,
   page,
   limit,
-  order, 
+  order,
   direction
 ) {
   const offset = (page - 1) * limit;
-  let query
-  if (direction === 'DESC') {
-    query = "SELECT * FROM messages WHERE requestID = ? ORDER BY ?? DESC LIMIT ? OFFSET ?;";
+  let query;
+  if (direction === "DESC") {
+    query =
+      "SELECT * FROM messages WHERE requestID = ? ORDER BY ?? DESC LIMIT ? OFFSET ?;";
   } else {
-    query = "SELECT * FROM messages WHERE requestID = ? ORDER BY ?? ASC LIMIT ? OFFSET ?;";    
+    query =
+      "SELECT * FROM messages WHERE requestID = ? ORDER BY ?? ASC LIMIT ? OFFSET ?;";
   }
   const values = [requestID, order, parseInt(limit), parseInt(offset)];
   const data = await db.run_query(query, values);
   return data;
 };
 
-//create a new message in the database
+/**
+ * Creates a new message
+ * @param {String} message.message message
+ * @param {Number} message.senderID user ID of the sender
+ * @param {Number} message.receiverID user ID of the receiver
+ * @param {Number} message.requestID ID of the request
+ * @returns {Object} operation status
+ */
 exports.add = async function add(message) {
   const query = "INSERT INTO messages SET ?";
   const data = await db.run_query(query, message);
   return data;
 };
 
-//delete a message by its id
+/**
+ * Deletes a single message by ID
+ * @param {Number} id ID of the book
+ * @returns {Object} operation status
+ */
 exports.delById = async function delById(id) {
   const query = "DELETE FROM messages WHERE ID = ?;";
   const values = [id];

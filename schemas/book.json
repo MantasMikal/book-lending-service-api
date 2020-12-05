@@ -32,19 +32,37 @@
           "type": "integer",
           "minimum": 0
         },
-        "borrowerId": {
-          "description": "User ID of the book borrower",
-          "type": "integer",
-          "minimum": 0
+        "status": {
+          "description": "Initial status of the book. 'Available' by default.",
+          "type": "string"
         },
-        "requesterId": {
-          "description": "User ID of the book requester",
-          "type": "integer",
-          "minimum": 0
+        "requestID": {
+          "description": "A request ID associated with the book",
+          "type": "number"
         }
       },
       "required": ["title", "author", "yearPublished", "ownerID"],
       "additionalProperties": true
+    },
+
+    "bookList": {
+      "$id": "#bookList",
+      "title": "Book List",
+      "description": "List of all books",
+      "properties": {
+        "books": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/book" }
+        },
+        "next": {
+          "type": "string",
+          "description": "A link to the next page"
+        },
+        "prev": {
+          "type": "string",
+          "description": "A link to the previous page"
+        }
+      }
     },
     
     "status": {
@@ -57,6 +75,65 @@
           "description": "Status",
           "type": "string",
           "enum": ["Available", "On Loan", "Requested"]
+        }
+      }
+    },
+
+    "bookUpdated": {
+      "$id": "#bookUpdated",
+      "title": "Book updated",
+      "description": "Confirmation of a successful book update",
+      "type": "object",
+      "properties": {
+        "ID": {
+          "description": "ID of the updated book record",
+          "type": "integer"
+        },
+        "updated": {
+          "description": "Boolean indicator of success",
+          "type": "boolean"
+        },
+        "link": {
+          "description": "A link to access the book",
+          "type": "string"
+        }
+      }
+    },
+
+    "bookCreated": {
+      "$id": "#bookCreated",
+      "title": "Book created",
+      "description": "Confirmation of a successful book creation",
+      "type": "object",
+      "properties": {
+        "ID": {
+          "description": "ID of the created book record",
+          "type": "integer"
+        },
+        "created": {
+          "description": "Boolean indicator of success",
+          "type": "boolean"
+        },
+        "link": {
+          "description": "A link to access the book",
+          "type": "string"
+        }
+      }
+    },
+
+    "bookDeleted": {
+      "$id": "#bookDeleted",
+      "title": "Book deleted",
+      "description": "Confirmation of a successful book deletion",
+      "type": "object",
+      "properties": {
+        "ID": {
+          "description": "ID of the deleted book record",
+          "type": "integer"
+        },
+        "deleted": {
+          "description": "Boolean indicator of success",
+          "type": "boolean"
         }
       }
     }

@@ -1,22 +1,28 @@
 openapi: 3.0.0
 info:
   version: 1.0.0
-  title: 304CEM Back End Demonstration API
-  description: A simple blog API. Use the module worksheets to complete the code and API architecture!
+  title: 304CEM – Public Library A Book Lending Web App
+  description: An API for A Book Lending Web App
   contact:
-    name: Colin Stephen
-    email: ab5169@coventry.ac.uk
+    name: Mantas Mikalauskas
+    email: mikalaum@coventry.ac.uk
   license:
     name: Apache 2.0
-    url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
+    url: "https://www.apache.org/licenses/LICENSE-2.0.html"
 servers:
-  - url: 'https://ecology-fiction-3000.codio-box.uk/api/v1'
+  - url: "https://ecology-fiction-3000.codio-box.uk/api/v1"
     description: Development server
 tags:
   - name: Users
     description: API endpoints for user management.
-  - name: Articles
-    description: Access and perform CRUD operations on blog entries.
+  - name: Books
+    description: API endpoints for CRUD operations on book entries.
+  - name: Messages
+    description: API endpoints for CRUD operations on request entries.
+  - name: Requests
+    description: API endpoints for CRUD operations on message entries.
+  - name: Search
+    description: API endpoints for searching.
 paths:
   /users:
     summary: Represents an individual user
@@ -26,8 +32,7 @@ paths:
     post:
       tags:
         - Users
-      description:
-        Create a new user account.
+      description: Create a new user account.
       requestBody:
         description: All new user data.
         required: true
@@ -36,7 +41,7 @@ paths:
             schema:
               $ref: ./user.json#/definitions/user
       responses:
-        '201':
+        "201":
           description: User created
           content:
             application/json:
@@ -45,17 +50,43 @@ paths:
     get:
       tags:
         - Users
-      description:
-        Get a list of all users.
+      description: Get a list of all users.
+      parameters:
+      - in: path
+        name: userID
+        schema:
+          type: integer
+        required: true
+        description: Numeric id of the user
+      - in: query
+        name: offset
+        schema:
+          type: integer
+        description: The number of items to skip before starting to collect the result set
+      - in: query
+        name: limit
+        schema:
+          type: integer
+        description: The numbers of items to return
+      - in: query
+        name: order
+        schema:
+          type: string
+        description: Field to order results by
+      - in: query
+        name: direction
+        schema:
+          type: string
+        description: ASC or DESC
       responses:
-        '200':
+        "200":
           description: List of users
           content:
             application/json:
               schema:
                 $ref: ./user.json#/definitions/userList
-        '401':
-          description: Only admin users can list all accounts
+        "403":
+          description: Only authenticated users can list all accounts
   /users/{id}:
     parameters:
       - in: path
@@ -67,24 +98,22 @@ paths:
     get:
       tags:
         - Users
-      description:
-        Get user by id.
+      description: Get user by id.
       responses:
-        '200':
+        "200":
           description: View of user record
           content:
             application/json:
               schema:
                 $ref: ./user.json#/definitions/userView
-        '401':
-          description: Non-admin users can only view their own record
-        '404':
+        "403":
+          description: Only authenticated users can view other accounts
+        "404":
           description: Not found
     put:
       tags:
         - Users
-      description:
-        Update user by id.
+      description: Update user by id.
       requestBody:
         description: Update a visible property or the password.
         required: true
@@ -93,27 +122,494 @@ paths:
             schema:
               $ref: ./user.json#/definitions/userUpdate
       responses:
-        '200':
+        "200":
           description: Confirmation and link to record.
           content:
             application/json:
               schema:
                 $ref: ./user.json#/definitions/userUpdated
-        '404':
+        "404":
           description: Not found
+        "403":
+          description: User must be authenticated
+        "401":
+          description: Only the account owner can update its details
     delete:
       tags:
         - Users
-      description:
-        Delete user by id.
+      description: Delete user by id.
       responses:
-        '200':
+        "200":
           description: Confirmation of deletion.
           content:
             application/json:
               schema:
                 $ref: ./user.json#/definitions/userDeleted
-        '401':
-          description: Only admin users can delete accounts
-        '404':
+        "401":
+          description: Only account owner can delete accounts
+        "403":
+          description: User must be authenticated
+        "404":
           description: Not found
+  /books:
+    summary: Represents a book
+    description: >
+      This resource represents a book in the system.
+      Each book is identified by a numeric `id`.
+    post:
+      tags:
+        - Books
+      description: Add a new book.
+      requestBody:
+        description: All new book data.
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: ./book.json#/definitions/book
+      responses:
+        "201":
+          description: Confirmation of created book and a link to it
+          content:
+            application/json:
+              schema:
+                $ref: ./book.json#/definitions/bookCreated
+    get:
+      tags:
+        - Books
+      description: Gets all books
+      parameters:
+      - in: path
+        name: userID
+        schema:
+          type: integer
+        required: true
+        description: Numeric id of the user
+      - in: query
+        name: offset
+        schema:
+          type: integer
+        description: The number of items to skip before starting to collect the result set
+      - in: query
+        name: limit
+        schema:
+          type: integer
+        description: The numbers of items to return
+      - in: query
+        name: order
+        schema:
+          type: string
+        description: Field to order results by
+      - in: query
+        name: direction
+        schema:
+          type: string
+        description: ASC or DESC
+      responses:
+        "200":
+          description: An array of books with pagination
+          content:
+            application/json:
+              schema:
+                $ref: ./book.json#/definitions/bookList
+  /books/{bookID}:
+    parameters:
+    - in: path
+      name: bookID
+      schema:
+        type: integer
+      required: true
+      description: Numeric id of the book
+    get:
+      tags:
+        - Books
+      summary: Gets a book by ID
+      responses:
+        "200":
+          description: A book object
+          content:
+            application/json:
+              schema:
+                $ref: ./book.json#/definitions/book
+        "404":
+          description: Not found
+    put:
+      tags:
+        - Books
+      summary: Updates a book by ID
+      requestBody:
+        description: All book update data.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./book.json#/definitions/book
+      responses:
+        "201":
+          description: Book updated
+          content:
+            application/json:
+              schema:
+                $ref: ./book.json#/definitions/bookUpdated
+        "404":
+          description: Not found
+        "401":
+          description: User must be authenticated
+        "403":
+          description: User must be the owner of the book
+    delete:
+      tags:
+        - Books
+      summary: Deletes a book by ID
+      responses:
+        "201":
+          description: Book deleted
+          content:
+            application/json:
+              schema:
+                $ref: ./book.json#/definitions/bookDeleted
+        "404":
+          description: Not found
+        "401":
+          description: User must be authenticated
+        "403":
+          description: User must be the owner of the book
+  /books/status/{bookID}:
+    parameters:
+    - in: path
+      name: bookID
+      schema:
+        type: integer
+      required: true
+      description: Numeric id of the book
+    put:
+      tags:
+        - Books
+      summary: Updates book status
+      description: > 
+        Updates book status and its associated request if applicable
+        Available book statuses: ['Available', 'Requested', 'On Loan']
+        Available request statuses: ['Open', 'Accepted', 'Completed']
+      requestBody:
+        description: Book status.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./book.json#/definitions/status
+      responses:
+        "201":
+          description: Book status updated
+          content:
+            application/json:
+              schema:
+                $ref: ./book.json#/definitions/bookUpdated
+        "404":
+          description: Not found
+        "401":
+          description: User must be authenticated
+        "403":
+          description: User must be the owner of the book
+  /books/user/{userID}:
+    parameters:
+    - in: path
+      name: userID
+      schema:
+        type: integer
+      required: true
+      description: Numeric id of the user
+    - in: query
+      name: offset
+      schema:
+        type: integer
+      description: The number of items to skip before starting to collect the result set
+    - in: query
+      name: limit
+      schema:
+        type: integer
+      description: The numbers of items to return
+    - in: query
+      name: order
+      schema:
+        type: string
+      description: Field to order results by
+    - in: query
+      name: direction
+      schema:
+        type: string
+      description: ASC or DESC
+    get:
+      tags:
+        - Books
+      summary: Gets all books by user ID
+      responses:
+        "200":
+          description: A list of books
+          content:
+            application/json:
+              schema:
+                $ref: ./book.json#/definitions/bookList
+  /messages:
+    summary: Represents a message
+    description: >
+      This resource represents an individual message associated with a request.
+      Each message is identified by a numeric `id` and associated with requestID.
+    post:
+      tags:
+        - Messages
+      description: Create a new message.
+      requestBody:
+        description: All message data.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./message.json#/definitions/message
+      responses:
+        "201":
+          description: Message created
+          content:
+            application/json:
+              schema:
+                $ref: ./message.json#/definitions/messageCreated
+        "404":
+          description: Not found
+        "401":
+          description: User must be authenticated
+        "403":
+          description: User must be a participant in a request
+  /messages/{requestID}:
+    parameters:
+    - in: path
+      name: requestID
+      schema:
+        type: integer
+      required: true
+      description: Numeric id of the user
+    - in: query
+      name: offset
+      schema:
+        type: integer
+      description: The number of items to skip before starting to collect the result set
+    - in: query
+      name: limit
+      schema:
+        type: integer
+      description: The numbers of items to return
+    - in: query
+      name: order
+      schema:
+        type: string
+      description: Field to order results by
+    - in: query
+      name: direction
+      schema:
+        type: string
+      description: ASC or DESC
+    get:
+      tags:
+        - Messages
+      summary: Gets all messages by request ID
+      responses:
+        "200":
+          description: A list of messages
+          content:
+            application/json:
+              schema:
+                $ref: ./message.json#/definitions/messageList
+        "404":
+          description: Not found
+        "401":
+          description: User must be authenticated
+        "403":
+          description: User must be a participant in a request
+  /requests:
+    summary: Represents a book request
+    description: >
+      This resource represents an individual book request.
+      Each request is identified by a numeric `id` and each 'Open' or 'Active' request is associated with bookID.
+      Available request statuses: ['Open', 'Accepted', 'Completed']
+    post:
+      tags:
+        - Requests
+      description: Create a new book request.
+      requestBody:
+        description: All request data.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: ./request.json#/definitions/request
+      responses:
+        "201":
+          description: Request created
+          content:
+            application/json:
+              schema:
+                $ref: ./request.json#/definitions/requestCreated
+        "401":
+          description: User must be authenticated
+  /requests/{requestID}:
+    parameters:
+    - in: path
+      name: requestID
+      schema:
+        type: integer
+      required: true
+      description: Numeric id of the user
+    get:
+      tags:
+        - Requests
+      summary: Gets request by request ID
+      responses:
+        "200":
+          description: A request creation status
+          content:
+            application/json:
+              schema:
+                $ref: ./request.json#/definitions/request
+        "404":
+          description: Not found
+        "401":
+          description: User must be authenticated
+        "403":
+          description: User must be a participant in a request
+    delete:
+      tags:
+        - Requests
+      summary: Delete a request by id
+      description: > 
+        Delete a request by id and all associated messages
+        Used to cancel an ongoing request. If books state was associated with
+        book, it is updated as well
+      responses:
+        "200":
+          description: Confirmation of deletion.
+          content:
+            application/json:
+              schema:
+                $ref: ./request.json#/definitions/requestDeleted
+        "403":
+          description: User must be authenticated
+        "401":
+          description: Only requester can delete a request
+        "404":
+          description: Not found
+  /requests/user/{userID}:
+    parameters:
+    - in: path
+      name: userID
+      schema:
+        type: integer
+      required: true
+      description: Numeric id of the user
+    - in: query
+      name: offset
+      schema:
+        type: integer
+      description: The number of items to skip before starting to collect the result set
+    - in: query
+      name: limit
+      schema:
+        type: integer
+      description: The numbers of items to return
+    - in: query
+      name: order
+      schema:
+        type: string
+      description: Field to order results by
+    - in: query
+      name: direction
+      schema:
+        type: string
+      description: ASC or DESC
+    get:
+      tags:
+        - Requests
+      summary: Gets all requests by user ID
+      responses:
+        "200":
+          description: A list of requests
+          content:
+            application/json:
+              schema:
+                $ref: ./request.json#/definitions/requestList
+        "404":
+          description: Not found
+        "401":
+          description: User must be authenticated
+  /requests/archive/{requestID}:
+    parameters:
+    - in: path
+      name: requestID
+      schema:
+        type: integer
+      required: true
+      description: Numeric id of the user
+    get:
+      tags:
+        - Requests
+      summary: Archives a request for user
+      description: >
+        Only can archive requests that are 'Completed'
+      responses:
+        "200":
+          description: Request update status
+          content:
+            application/json:
+              schema:
+                $ref: ./request.json#/definitions/requestUpdated
+        "404":
+          description: Not found
+        "401":
+          description: User must be authenticated
+        "403":
+          description: User must be a participant in a request
+  /search/books:
+    parameters:
+    - in: query
+      name: q
+      schema:
+        type: string
+      description: A search term.
+    - in: query
+      name: userID
+      schema:
+        type: number
+      description: (Optional) Search for user books. Must be authenticated 
+    - in: query
+      name: offset
+      schema:
+        type: integer
+      description: The number of items to skip before starting to collect the result set
+    - in: query
+      name: limit
+      schema:
+        type: integer
+      description: The numbers of items to return
+    - in: query
+      name: order
+      schema:
+        type: string
+      description: Field to order results by
+    - in: query
+      name: direction
+      schema:
+        type: string
+      description: ASC or DESC
+    get:
+      tags:
+        - Search
+      summary: Searches for books by title, author or ISBN
+      description: >
+        Looks for only user books if userID is
+        supplied as a query parameter. Searches all books otherwise
+      responses:
+        "200":
+          description: A list of books
+          content:
+            application/json:
+              schema:
+                $ref: ./book.json#/definitions/bookList
+        "401":
+          description: User must be authenticated

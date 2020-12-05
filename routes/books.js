@@ -1,3 +1,9 @@
+/**
+ * Book routes
+ * Handles Books specific routes
+ * @module routes/Books
+ */
+
 const Router = require("koa-router");
 const bodyParser = require("koa-bodyparser");
 const formidable = require("koa2-formidable");
@@ -6,6 +12,8 @@ const auth = require("../controllers/auth");
 const can = require("../permissions/books");
 
 const books = require("../models/books");
+const users = require("../models/users");
+
 const requests = require("../models/requests");
 const {
   validateBook,
@@ -28,9 +36,9 @@ router.post(
   validateBook,
   createBook
 );
-router.get("/:id([0-9]{1,})", getById);
+router.get("/:bookID([0-9]{1,})", getById);
 router.put(
-  "/:id([0-9]{1,})",
+  "/:bookID([0-9]{1,})",
   formidable(),
   auth,
   bodyParser(),
@@ -38,7 +46,7 @@ router.put(
   validateBook,
   updateBook
 );
-router.del("/:id([0-9]{1,})", auth, deleteBook);
+router.del("/:bookID([0-9]{1,})", auth, deleteBook);
 router.get("/user/:userID([0-9]{1,})", getByUserId);
 router.post(
   "/status/:bookID([0-9]{1,})",
@@ -48,6 +56,14 @@ router.post(
   updateStatus
 );
 
+/**
+ * Gets all books
+ * @queryparam {Number} page page to retrieve
+ * @queryparam {Number} limit amount of results to retrieve
+ * @queryparam {String} order field to order results by
+ * @queryparam {String} direction direction to order results by
+ * @route {GET} /books
+ */
 async function getAll(ctx) {
   const {
     page = 1,
@@ -63,9 +79,9 @@ async function getAll(ctx) {
   resultLimit = resultLimit < 1 ? 10 : resultLimit;
   resultPage = resultPage < 1 ? 1 : resultPage;
   const result = await books.getAll(resultPage, resultLimit, order, direction);
-  
-  const isNextPageAvailable = result && result.length > resultLimit
-  const isPrevPageAvailable =  resultPage - 1 > 1
+
+  const isNextPageAvailable = result && result.length > resultLimit;
+  const isPrevPageAvailable = resultPage - 1 > 1;
 
   if (result.length) {
     const body = result.map((book) => {
@@ -107,6 +123,15 @@ async function getAll(ctx) {
   }
 }
 
+/**
+ * Gets all books by user ID
+ * @queryparam {Number} userID id of the user
+ * @queryparam {Number} page page to retrieve
+ * @queryparam {Number} limit amount of results to retrieve
+ * @queryparam {String} order field to order results by
+ * @queryparam {String} direction direction to order results by
+ * @route {GET} /books/user/:userID
+ */
 async function getByUserId(ctx) {
   const { userID } = ctx.params;
   const {
@@ -123,10 +148,16 @@ async function getByUserId(ctx) {
   resultLimit = resultLimit < 1 ? 10 : resultLimit;
   resultPage = resultPage < 1 ? 1 : resultPage;
 
-  const result = await books.getByUserId(userID, resultPage, resultLimit, order, direction);
-  
-  const isNextPageAvailable = result && result.length > resultLimit
-  const isPrevPageAvailable =  resultPage - 1 > 1
+  const result = await books.getByUserId(
+    userID,
+    resultPage,
+    resultLimit,
+    order,
+    direction
+  );
+
+  const isNextPageAvailable = result && result.length > resultLimit;
+  const isPrevPageAvailable = resultPage - 1 > 1;
 
   if (result.length) {
     const body = result.map((book) => {
@@ -168,18 +199,38 @@ async function getByUserId(ctx) {
   }
 }
 
+/**
+ * Gets book by its ID
+ * @queryparam {Number} bookID id of the book
+ * @route {GET} /books/:bookID
+ */
 async function getById(ctx) {
-  const id = ctx.params.id;
+  const id = ctx.params.bookID;
   const result = await books.getById(id);
-
   if (result.length) {
-    const article = result[0];
-    ctx.body = article;
+    const book = result[0];
+    const { ownerID } = book;
+    const userById = await users.getById(ownerID);
+    const bookOwner = userById[0];
+    const { username } = bookOwner;
+    ctx.body = { ...book, ownerUsername: username };
   } else {
     ctx.body = [];
   }
 }
 
+/**
+ * Creates a new book
+ * @bodyparam {String} title book title
+ * @bodyparam {String} summary book summary
+ * @bodyparam {String} author book author
+ * @bodyparam {String} yearPublished year book was published
+ * @bodyparam {Sting} ISBN ISBN of the book
+ * @bodyparam {Number} ownerID book owner ID
+
+ * @bo
+ * @route {POST} /books
+ */
 async function createBook(ctx) {
   const { body, files } = ctx.request;
   const urls = files && (await handleImageUpload(files));
@@ -192,8 +243,21 @@ async function createBook(ctx) {
   }
 }
 
+/**
+ * Updates a book
+ * @headerparam authorization user authentication token for Basic Auth
+ * @bodyparam {Object} book details to be updated
+ * @bodyparam {String} title book title
+ * @bodyparam {String} summary book summary
+ * @bodyparam {String} author book author
+ * @bodyparam {String} yearPublished year book was published
+ * @bodyparam {Sting} ISBN ISBN of the book
+ * @bodyparam {Number} ownerID book owner ID
+ * @queryparam {Number} bookID ID of the book to update
+ * @route {PUT} /books/:bookID
+ */
 async function updateBook(ctx) {
-  const id = ctx.params.id;
+  const id = ctx.params.bookID;
   let result = await books.getById(id); // check it exists
   if (result.length) {
     let book = result[0];
@@ -224,6 +288,16 @@ async function updateBook(ctx) {
   }
 }
 
+/**
+ * Updates a book status
+ * and handles request status updates if applicable
+ * Available book statuses: ['Available', 'Requested', 'On Loan']
+ * Available request statuses: ['Open', 'Accepted', 'Completed']
+ * @headerparam authorization user authentication token for Basic Auth
+ * @bodyparam {String} status status to be updated.
+ * @queryparam {Number} bookID ID of the book to update
+ * @route {POST} /books/status/:bookID
+ */
 async function updateStatus(ctx) {
   const { bookID } = ctx.params;
   const { status } = ctx.request.body;
@@ -295,8 +369,14 @@ async function updateStatus(ctx) {
   }
 }
 
+/**
+ * Deletes a book
+ * @queryparam {Number} bookID ID of the book to delete
+ * @headerparam authorization user authentication token for Basic Auth
+ * @route {DELETE} /books/:bookID
+ */
 async function deleteBook(ctx) {
-  const id = ctx.params.id;
+  const id = ctx.params.bookID;
   let result = await books.getById(id); // check it exists
   if (result.length) {
     let book = result[0];
