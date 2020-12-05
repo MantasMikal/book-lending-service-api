@@ -123,7 +123,7 @@ async function getByUserId(ctx) {
       prev: isPrevPageAvailable && `${ctx.request.path}?page=${resultPage}`,
     };
   } else {
-    ctx.body = [];
+    ctx.body = {requests: []};
   }
 }
 

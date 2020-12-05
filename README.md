@@ -11,7 +11,7 @@ npm i
 #Run
 npm start
 
-#View docs
+#Generate and view docs
 npm run docs
 
 #Tests

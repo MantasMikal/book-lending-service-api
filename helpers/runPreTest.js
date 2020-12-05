@@ -1,7 +1,7 @@
 const { exec } = require("child_process");
 
 /**
- * Runs pretest command to set up the database
+ * Runs pretest command to set up the database for testing
  * @param {Function} done callback when command finished execution
  */
 const runPreTest = (done) => {
