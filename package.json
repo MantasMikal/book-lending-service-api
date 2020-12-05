@@ -9,6 +9,8 @@
     "testDB:drop": "mysql --user=root --password=p455w0rd -e 'DROP DATABASE test_db;'",
     "testDB:create": "mysql --user=root --password=p455w0rd -e 'CREATE DATABASE test_db;'",
     "testDB:setup": "mysql --user=root --password=p455w0rd test_db < ./sql_scripts/setup_test_db.sql",
+    "devDB:setup": "mysql --user=root --password=p455w0rd books_db < ./sql_scripts/setup_dev_db.sql",
+    "devDB:drop": "mysql --user=root --password=p455w0rd books_db < ./sql_scripts/drop_tables.sql",
     "pretest": "npm run testDB:drop && npm run testDB:create && npm run testDB:setup",
     "start": "nodemon index.js",
     "docs": "npm run docs:generate && nodemon docs.js",
