@@ -9,6 +9,8 @@ If you're running this locally for the first time, you have to run a command to 
 
 If your mysql password is different, don't forget to change it inside package.json scripts
 
+🐌 The tests takes a long time to run (40s in codio), so be patient! It is because the database is re-created before each test. This would be way faster if MySQL would work properly if ran in-memory like SQLite. 
+
 ```bash
 
 # Install
