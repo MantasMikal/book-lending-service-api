@@ -14,7 +14,7 @@ app.use(mount('/', serve('./docs/jsdocs')))
 app.use(mount('/openapi', serve('./docs/openapi')))
 app.use(mount('/schemas', serve('./schemas')))
 
-let port = process.env.PORT || 3030;
+let port = 3001;
 
 app.listen(port);
 console.log(`OpenAPI server running on port ${port}`)
