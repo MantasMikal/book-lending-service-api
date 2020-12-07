@@ -17,10 +17,10 @@ probably use different configuration settings anyway.
 // Export database connection information.
 // Use the environment settings or given defaults.
 exports.config = {
-  host: process.env.DB_HOST || "freedb.tech",
+  host: process.env.DB_HOST || "j5zntocs2dn6c3fj.chr7pe7iynqr.eu-west-1.rds.amazonaws.com",
   port: process.env.DB_PORT || 3306,
-  user: process.env.DB_USER || "freedbtech_books",
-  password: process.env.DB_PASSWORD || "p455w0rd",
-  database: process.env.DB_DATABASE || "freedbtech_books_db",
+  user: process.env.DB_USER || "wkcwsczwn39de47j",
+  password: process.env.DB_PASSWORD || "elyw3tvhiwqytl82",
+  database: process.env.DB_DATABASE || "a0zjackh0qxp6cmd",
   connection_limit: 100
 }
