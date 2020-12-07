@@ -16,12 +16,11 @@ probably use different configuration settings anyway.
 
 // Export database connection information.
 // Use the environment settings or given defaults.
-
-// exports.config = {
-//   host: process.env.DB_HOST || "localhost",
-//   port: process.env.DB_PORT || 3306,
-//   user: process.env.DB_USER || "root",
-//   password: process.env.DB_PASSWORD || "p455w0rd",
-//   database: process.env.DB_DATABASE || "books_db",
-//   connection_limit: 100
-// }
+exports.config = {
+  host: process.env.DB_HOST || "freedb.tech",
+  port: process.env.DB_PORT || 3306,
+  user: process.env.DB_USER || "freedbtech_books",
+  password: process.env.DB_PASSWORD || "p455w0rd",
+  database: process.env.DB_DATABASE || "freedbtech_books_db",
+  connection_limit: 100
+}
