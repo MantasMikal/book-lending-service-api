@@ -1,5 +1,7 @@
 # 304CEM Book Lending service
 
+This project was created as part of University curriculum
+
 All tasks from the brief are complete. 
 Project built using MySQL 8
 
